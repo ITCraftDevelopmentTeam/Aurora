@@ -4,19 +4,19 @@ import pixel.aurora.type.Identifier
 import java.util.*
 
 @Suppress("LeakingThis")
-open class Environment(parent: Environment? = null, private val name: String = "<anonymous>") {
+open class Context(parent: Context? = null, private val name: String = "<anonymous>") {
 
-    override fun toString() = "Environment($name)"
+    override fun toString() = "Context($name)"
 
-    protected val parent: Environment
+    protected val parent: Context
 
     init {
         this.parent = parent ?: this
     }
 
     open fun getParent() = parent
-    open fun getTree(): List<Environment> {
-        val stack = mutableListOf<Environment>()
+    open fun getTree(): List<Context> {
+        val stack = mutableListOf<Context>()
         stack.add(this)
         var parent = getParent()
         while (!stack.contains(parent)) {
@@ -38,18 +38,18 @@ open class Environment(parent: Environment? = null, private val name: String = "
         createLocalVariables(it)
     }
 
-    open fun setVariable(identifier: Identifier, value: Any?) = (getVariableWithEnvironment(identifier)?.second ?: createLocalVariable(identifier, value)).setValue(value)
+    open fun setVariable(identifier: Identifier, value: Any?) = (getVariableWithContext(identifier)?.second ?: createLocalVariable(identifier, value)).setValue(value)
 
     open fun deleteVariables(vararg variables: Identifier) {
         variables.forEach {
-            val entry = getVariableWithEnvironment(it) ?: return@forEach
+            val entry = getVariableWithContext(it) ?: return@forEach
             entry.first.variables.remove(entry.second.getIdentifier())
         }
     }
 
     open fun deleteLocalVariables(vararg variable: Identifier) = variable.forEach(variables::remove)
 
-    open fun getVariableWithEnvironment(name: Identifier): Pair<Environment, Variable>? {
+    open fun getVariableWithContext(name: Identifier): Pair<Context, Variable>? {
         for (env in getTree().reversed()) {
             if (env.variables.contains(name)) return env to env.variables[name]!!
         }
