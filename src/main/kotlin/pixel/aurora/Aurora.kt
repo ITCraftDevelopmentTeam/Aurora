@@ -1,3 +1,7 @@
 package pixel.aurora
 
-object Aurora
+object Aurora {
+
+    const val namespace = "aurora"
+
+}
