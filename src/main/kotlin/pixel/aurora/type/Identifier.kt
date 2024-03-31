@@ -1,31 +1,23 @@
 package pixel.aurora.type
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import pixel.aurora.Aurora
 import java.util.*
 
 object Identifiers {
 
-    fun parse(identifier: String): Optional<Identifier> {
+    fun parse(identifier: String, defaultNamespace: String? = null): Optional<Identifier> {
         if (identifier.trim().isEmpty()) return Optional.empty()
         val split = identifier.split(":")
         if (split.isEmpty()) return Optional.empty()
-        if (split.size == 1) return Optional.of(Identifier(Aurora.namespace, split.first()))
+        if (split.size == 1) return Optional.of(Identifier(defaultNamespace ?: Aurora.namespace, split.first()))
         return Optional.of(Identifier(split.first(), split.subList(1, split.size).joinToString(separator = ":")))
     }
 
-    fun parseOrThrow(identifier: String): Identifier = parse(identifier).orElseThrow()
+    fun parseOrThrow(identifier: String, defaultNamespace: String? = null): Identifier = parse(identifier, defaultNamespace = defaultNamespace).orElseThrow()
 
     fun isNamespace(namespace: String) = namespace.trim().isNotEmpty() && namespace.chars().allMatch {
         val character = it.toChar()
-        character == '_' || character in 'A'..'Z' || character in 'a'..'z' || character in '0'..'9' || character == '-'
+        character == '<' || character == '>' || character == '_' || character in 'A'..'Z' || character in 'a'..'z' || character in '0'..'9' || character == '-'
     }
 
     fun isPath(path: String) = path.trim().isNotEmpty() && path.chars().allMatch {
@@ -35,8 +27,6 @@ object Identifiers {
 
 }
 
-@JsonSerialize(using = IdentifierSerializer::class)
-@JsonDeserialize(using = IdentifierDeserializer::class)
 class Identifier(private val namespace: String, private val path: String) {
 
     fun getNamespace() = namespace
@@ -53,18 +43,4 @@ class Identifier(private val namespace: String, private val path: String) {
 
 }
 
-class IdentifierDeserializer : StdDeserializer<Identifier>(Identifier::class.java) {
-
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Identifier {
-        return Identifiers.parseOrThrow(p.valueAsString)
-    }
-
-}
-class IdentifierSerializer : StdSerializer<Identifier>(Identifier::class.java) {
-
-    override fun serialize(value: Identifier, gen: JsonGenerator, serializers: SerializerProvider) {
-        gen.writeString(value.toString())
-    }
-
-}
-
+fun identifierOf(identifier: String, defaultNamespace: String? = null) = Identifiers.parseOrThrow(identifier, defaultNamespace = defaultNamespace)

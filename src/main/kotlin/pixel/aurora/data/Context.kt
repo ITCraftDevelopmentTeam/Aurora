@@ -4,11 +4,13 @@ import pixel.aurora.type.Identifier
 import java.util.*
 
 @Suppress("LeakingThis")
-open class Context(parent: Context? = null, private val name: String = "<anonymous>") {
+open class Context(private val environment: Environment, parent: Context? = null, private val name: String = "<anonymous>") {
+
+    open fun getEnvironment() = environment
 
     override fun toString() = "Context($name)"
 
-    protected val parent: Context
+    private val parent: Context
 
     init {
         this.parent = parent ?: this
@@ -50,15 +52,15 @@ open class Context(parent: Context? = null, private val name: String = "<anonymo
     open fun deleteLocalVariables(vararg variable: Identifier) = variable.forEach(variables::remove)
 
     open fun getVariableWithContext(name: Identifier): Pair<Context, Variable>? {
-        for (env in getTree().reversed()) {
-            if (env.variables.contains(name)) return env to env.variables[name]!!
+        for (ctx in getTree().reversed()) {
+            if (ctx.variables.contains(name)) return ctx to ctx.variables[name]!!
         }
         return null
     }
 
     open fun getVariable(name: Identifier): Variable? {
-        for (env in getTree().reversed()) {
-            if (env.variables.contains(name)) return env.variables[name]!!
+        for (ctx in getTree().reversed()) {
+            if (ctx.variables.contains(name)) return ctx.variables[name]!!
         }
         return null
     }
