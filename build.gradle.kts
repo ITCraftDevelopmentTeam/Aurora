@@ -19,7 +19,6 @@ dependencies {
 }
 
 dependencies {
-    implementation("com.charleskorn.kaml:kaml:0.58.0")
     implementation("com.google.guava:guava:33.1.0-jre")
 }
 

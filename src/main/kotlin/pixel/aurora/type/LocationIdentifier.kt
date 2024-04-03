@@ -3,17 +3,17 @@ package pixel.aurora.type
 import pixel.aurora.Aurora
 import java.util.*
 
-object Identifiers {
+object LocationIdentifiers {
 
-    fun parse(identifier: String, defaultNamespace: String? = null): Optional<Identifier> {
+    fun parse(identifier: String, defaultNamespace: String? = null): Optional<LocationIdentifier> {
         if (identifier.trim().isEmpty()) return Optional.empty()
         val split = identifier.split(":")
         if (split.isEmpty()) return Optional.empty()
-        if (split.size == 1) return Optional.of(Identifier(defaultNamespace ?: Aurora.namespace, split.first()))
-        return Optional.of(Identifier(split.first(), split.subList(1, split.size).joinToString(separator = ":")))
+        if (split.size == 1) return Optional.of(LocationIdentifier(defaultNamespace ?: Aurora.namespace, split.first()))
+        return Optional.of(LocationIdentifier(split.first(), split.subList(1, split.size).joinToString(separator = ":")))
     }
 
-    fun parseOrThrow(identifier: String, defaultNamespace: String? = null): Identifier = parse(identifier, defaultNamespace = defaultNamespace).orElseThrow()
+    fun parseOrThrow(identifier: String, defaultNamespace: String? = null): LocationIdentifier = parse(identifier, defaultNamespace = defaultNamespace).orElseThrow()
 
     fun isNamespace(namespace: String) = namespace.trim().isNotEmpty() && namespace.chars().allMatch {
         val character = it.toChar()
@@ -27,14 +27,14 @@ object Identifiers {
 
 }
 
-class Identifier(private val namespace: String, private val path: String) {
+class LocationIdentifier(private val namespace: String, private val path: String) {
 
     fun getNamespace() = namespace
     fun getPath() = path
 
     init {
-        assert(Identifiers.isNamespace(namespace)) { "Invalid namespace: $namespace" }
-        assert(Identifiers.isPath(path)) { "Invalid path: $path" }
+        assert(LocationIdentifiers.isNamespace(namespace)) { "Invalid namespace: $namespace" }
+        assert(LocationIdentifiers.isPath(path)) { "Invalid path: $path" }
     }
 
     override fun hashCode() = toString().hashCode()
@@ -43,4 +43,4 @@ class Identifier(private val namespace: String, private val path: String) {
 
 }
 
-fun identifierOf(identifier: String, defaultNamespace: String? = null) = Identifiers.parseOrThrow(identifier, defaultNamespace = defaultNamespace)
+fun locationIdentifierOf(identifier: String, defaultNamespace: String? = null) = LocationIdentifiers.parseOrThrow(identifier, defaultNamespace = defaultNamespace)
