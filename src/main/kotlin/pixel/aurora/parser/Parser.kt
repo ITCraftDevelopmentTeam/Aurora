@@ -4,7 +4,9 @@ import java.net.URI
 import java.nio.CharBuffer
 import java.util.*
 
-class ParseException(message: String, val buffer: CharBuffer, val uri: URI, val parser: Parser<*>) : RuntimeException(message)
+class ParseException(message: String, val buffer: CharBuffer, val uri: URI, val parser: Parser<*>) :
+    RuntimeException(message)
+
 object ParserMessages {
 
     const val invalidSyntax = "Invalid syntax"
@@ -28,17 +30,21 @@ object Parsers {
 
 }
 
-abstract class Parser <T> {
+abstract class Parser<T> {
 
     private var uri: URI = Parsers.defaultURI
     private var buffer: CharBuffer? = null
 
     fun getURI() = uri
-    open fun setURI(uri: URI) { this.uri = uri }
+    open fun setURI(uri: URI) {
+        this.uri = uri
+    }
 
     fun getBuffer(): CharBuffer = getBufferOrNull()!!
     open fun getBufferOrNull() = buffer
-    open fun setBuffer(buffer: CharBuffer?) { this.buffer = buffer }
+    open fun setBuffer(buffer: CharBuffer?) {
+        this.buffer = buffer
+    }
 
     open fun makeError(message: String) = ParseException(message, getBuffer(), getURI(), this)
 

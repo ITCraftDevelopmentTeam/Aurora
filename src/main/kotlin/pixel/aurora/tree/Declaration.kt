@@ -15,10 +15,28 @@ class CommentsDeclaration(private val text: String, private val isBlock: Boolean
 
 }
 
-class FunctionDeclaration(private val name: Identifier, private val body: List<Statement>) : Declaration {
+interface FunctionDeclaration : Declaration {
 
     override fun getDeclarationName() = "FunctionDeclaration"
-    fun getFunctionName() = name
+    fun getFunctionDeclarationName(): String
+    fun getFunctionName(): Identifier
+
+
+}
+
+class BlockFunctionDeclaration(private val name: Identifier, private val body: List<Statement>) : FunctionDeclaration {
+
+    override fun getFunctionDeclarationName() = "BlockFunctionDeclaration"
+    override fun getFunctionName() = name
     fun getBody() = body
+
+}
+
+class ExpressionFunctionDeclaration(private val name: Identifier, private val expression: Expression) :
+    FunctionDeclaration {
+
+    override fun getFunctionDeclarationName() = "ExpressionFunctionDeclaration"
+    override fun getFunctionName() = name
+    fun getExpression() = expression
 
 }

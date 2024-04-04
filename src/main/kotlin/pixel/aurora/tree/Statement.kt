@@ -15,7 +15,7 @@ class ExpressionStatement(private val expression: Expression) : Statement {
 
 }
 
-class PackageDefinitionStatement(private val location: LocationIdentifierLiteral): Statement {
+class PackageDefinitionStatement(private val location: LocationIdentifierLiteral) : Statement {
 
     override fun getStatementName() = "PackageDefinitionStatement"
 

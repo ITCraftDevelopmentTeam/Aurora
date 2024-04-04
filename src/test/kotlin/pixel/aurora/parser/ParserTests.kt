@@ -1,8 +1,9 @@
 package pixel.aurora.parser
 
 import org.junit.jupiter.api.Test
+import pixel.aurora.tree.BlockFunctionDeclaration
 import pixel.aurora.tree.CommentsDeclaration
-import pixel.aurora.tree.FunctionDeclaration
+import pixel.aurora.tree.ExpressionFunctionDeclaration
 import pixel.aurora.type.locationIdentifierOf
 import java.nio.CharBuffer
 import kotlin.test.assertEquals
@@ -23,18 +24,23 @@ class ParserTests {
     @Test
     fun `Program Tests`() {
         val text = """
-            package @[hello:world];
-            /* 1HelloWorld2 3
-            */function abcFunction () {}
-            function defFunction () {}
+            package@[hello:world];
+            /*
+               1HelloWorld2 3
+            */
+            fun abcFunction () {
+                @[abc:def];
+                @[ghi:jkl];
+            }
+            fun defFunction () = @[ddd];
         """.trimIndent()
         val parser = ProgramParser()
         parser.setBuffer(CharBuffer.wrap(text))
         val result = parser.parse()
         val body = result.getBody()
         assertIs<CommentsDeclaration>(body[0])
-        assertIs<FunctionDeclaration>(body[1])
-        assertIs<FunctionDeclaration>(body[2])
+        assertIs<BlockFunctionDeclaration>(body[1])
+        assertIs<ExpressionFunctionDeclaration>(body[2])
     }
 
 }

@@ -1,8 +1,13 @@
 package pixel.aurora.parser
 
 import java.nio.BufferUnderflowException
+import java.util.*
 
-class CharactersOperation(private val min: Int = 0, private val max: Int = Int.MAX_VALUE, private val matcher: (Char) -> Boolean) : Parser<CharArray>() {
+class CharactersOperation(
+    private val min: Int = 0,
+    private val max: Int = Int.MAX_VALUE,
+    private val matcher: (Char) -> Boolean
+) : Parser<CharArray>() {
 
     override fun parse(): CharArray {
         val buffer = getBuffer()
@@ -45,7 +50,8 @@ class ChoiceOperator<T : Any>(private vararg val choices: Parser<out T>) : Parse
                     include(i)
                 }
                 if (result.isSuccess) return result.getOrThrow()
-            } catch (_: Throwable) {}
+            } catch (_: Throwable) {
+            }
         }
         throw makeError(ParserMessages.invalidSyntax)
     }
@@ -70,49 +76,66 @@ class KeywordOperator(private val name: String) : Parser<String>() {
 
 }
 
-class RepeatingOperator<T>(private val parser: Parser<T>, private val min: Int = 0, private val max: Int = Int.MAX_VALUE) : Parser<List<T>>() {
+class RepeatingOperator<T>(
+    private val parser: Parser<T>,
+    private val min: Int = 0,
+    private val max: Int = Int.MAX_VALUE
+) : Parser<List<T>>() {
 
     override fun parse(): List<T> {
-        val inputBuffer = getBuffer()
-        val result = mutableListOf<T>()
-        var occurrenceCount = 0
-        if (min > 0) {
-            for (i in 1..min) {
-                val element = try {
-                    include(parser)
-                } catch (e: BufferUnderflowException) {
-                    break
-                }
-                result.add(element)
-                occurrenceCount++
-            }
-        }
-        while (occurrenceCount < max && inputBuffer.position() < inputBuffer.capacity()) {
-            val element = try {
-                include(parser)
-            } catch (e: BufferUnderflowException) {
+        val list = mutableListOf<T>()
+        val range = min .. max
+        while (list.size < range.last) {
+            val start = getBuffer().position()
+            try {
+                list += include(parser)
+            } catch (_: Throwable) {
+                getBuffer().position(start)
                 break
             }
-            result.add(element)
-            occurrenceCount++
         }
-        if (occurrenceCount < min || occurrenceCount > max) {
-            throw makeError("Expected $min to $max occurrences, but found ${occurrenceCount}.")
+        return when (val result = list.takeIf { it.size in range }) {
+            null -> throw makeError("Invalid syntax")
+            else -> result
         }
-        return result
+    }
+
+}
+
+class OptionalOperator<T : Any>(private val parser: Parser<T>) : Parser<Optional<T>>() {
+
+    private var defaultMapper: (() -> T)? = null
+
+    fun orDefault(mapper: () -> T) = this.also {
+        defaultMapper = mapper
+    }
+
+    override fun parse(): Optional<T> {
+        val buffer = getBuffer()
+        val start = buffer.position()
+        return try {
+            include(parser)
+        } catch (_: Throwable) {
+            buffer.position(start)
+            defaultMapper?.let { it() }
+        }.let { Optional.ofNullable(it) }
     }
 
 }
 
 fun <T : Any> choice(vararg parsers: Parser<out T>) = ChoiceOperator(*parsers)
 fun character(vararg char: Char) = CharactersOperation(1, 1) { it in char }
-fun characters(min: Int = 1, max: Int = Integer.MAX_VALUE, matcher: (Char) -> Boolean) = CharactersOperation(min, max, matcher)
+fun characters(min: Int = 1, max: Int = Integer.MAX_VALUE, matcher: (Char) -> Boolean) =
+    CharactersOperation(min, max, matcher)
+
 fun whitespace(min: Int = 0, max: Int = Int.MAX_VALUE) = CharactersOperation(min, max, Char::isWhitespace)
 fun keyword(name: String) = KeywordOperator(name)
+fun <T : Any> optional(parser: Parser<T>) = OptionalOperator(parser)
 fun <T> repeat(parser: Parser<T>, min: Int = 0, max: Int = Int.MAX_VALUE) = RepeatingOperator(parser, min, max)
 fun <T> parser(block: Parser<T>.() -> T): Parser<T> = object : Parser<T>() {
     override fun parse() = block()
 }
+
 fun semicolon(optional: Boolean = false) = parser {
     val characters = include(characters(min = if (optional) 0 else 1) { it == ';' || it.isWhitespace() })
     if (!optional && ';' !in characters) throw makeError(ParserMessages.invalidCharacter)

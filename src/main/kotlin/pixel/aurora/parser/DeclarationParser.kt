@@ -1,7 +1,10 @@
+@file:Suppress("DuplicatedCode")
+
 package pixel.aurora.parser
 
-import pixel.aurora.tree.FunctionDeclaration
+import pixel.aurora.tree.BlockFunctionDeclaration
 import pixel.aurora.tree.CommentsDeclaration
+import pixel.aurora.tree.ExpressionFunctionDeclaration
 
 class CommentsDeclarationParser : Parser<CommentsDeclaration>() {
 
@@ -26,7 +29,7 @@ class CommentsDeclarationParser : Parser<CommentsDeclaration>() {
                 if (text.endsWith("*") && got == '/') break
                 text += got
             }
-            text = text.substring(0 .. text.length - 2)
+            text = text.substring(0..text.length - 2)
             include(whitespace())
             return CommentsDeclaration(text, true)
         }
@@ -35,15 +38,50 @@ class CommentsDeclarationParser : Parser<CommentsDeclaration>() {
 
 }
 
-class FunctionDeclarationParser : Parser<FunctionDeclaration>() {
+class BlockFunctionDeclarationParser : Parser<BlockFunctionDeclaration>() {
 
-    override fun parse(): FunctionDeclaration {
-        include(keyword("function"))
+    override fun parse(): BlockFunctionDeclaration {
+        include(keyword("fun"))
         include(whitespace(min = 1))
         val name = include(IdentifierParser())
         include(whitespace())
-        include(keyword("() {}"))
-        return FunctionDeclaration(name, listOf())
+        include(keyword("("))
+        include(whitespace())
+        include(keyword(")"))
+        include(whitespace())
+        include(keyword("{"))
+        val body = repeat(
+            parser {
+                include(whitespace())
+                val statement = include(StatementParser())
+                include(semicolon(true))
+                statement
+            }
+        ).let { include(it) }
+        include(whitespace())
+        include(keyword("}"))
+        include(whitespace())
+        return BlockFunctionDeclaration(name, body.map { it })
+    }
+
+}
+
+class ExpressionFunctionDeclarationParser : Parser<ExpressionFunctionDeclaration>() {
+
+    override fun parse(): ExpressionFunctionDeclaration {
+        include(keyword("fun"))
+        include(whitespace(min = 1))
+        val name = include(IdentifierParser())
+        include(whitespace())
+        include(keyword("("))
+        include(whitespace())
+        include(keyword(")"))
+        include(whitespace())
+        include(keyword("="))
+        include(whitespace())
+        val expression = include(ExpressionParser())
+        include(semicolon())
+        return ExpressionFunctionDeclaration(name, expression)
     }
 
 }

@@ -18,7 +18,7 @@ class Identifier(private val name: String) : Expression {
 
 }
 
-interface Literal <T> : Expression {
+interface Literal<T> : Expression {
 
     override fun getExpressionName() = "Literal"
     fun getLiteralName(): String
@@ -26,7 +26,7 @@ interface Literal <T> : Expression {
 
 }
 
-open class UnknownLiteral <T>(private val literalName: String, private val literal: T) : Literal <T> {
+open class UnknownLiteral<T>(private val literalName: String = "UnknownLiteral", private val literal: T) : Literal<T> {
 
     override fun getLiteralName() = literalName
     override fun getLiteral() = literal
@@ -35,4 +35,5 @@ open class UnknownLiteral <T>(private val literalName: String, private val liter
 
 class StringLiteral(literal: String) : UnknownLiteral<String>("StringLiteral", literal)
 class NumberLiteral(literal: BigDecimal) : UnknownLiteral<BigDecimal>("NumberLiteral", literal)
-class LocationIdentifierLiteral(literal: LocationIdentifier) : UnknownLiteral<LocationIdentifier>("LocationIdentifierLiteral", literal)
+class LocationIdentifierLiteral(literal: LocationIdentifier) :
+    UnknownLiteral<LocationIdentifier>("LocationIdentifierLiteral", literal)

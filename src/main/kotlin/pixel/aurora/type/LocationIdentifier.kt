@@ -10,10 +10,16 @@ object LocationIdentifiers {
         val split = identifier.split(":")
         if (split.isEmpty()) return Optional.empty()
         if (split.size == 1) return Optional.of(LocationIdentifier(defaultNamespace ?: Aurora.namespace, split.first()))
-        return Optional.of(LocationIdentifier(split.first(), split.subList(1, split.size).joinToString(separator = ":")))
+        return Optional.of(
+            LocationIdentifier(
+                split.first(),
+                split.subList(1, split.size).joinToString(separator = ":")
+            )
+        )
     }
 
-    fun parseOrThrow(identifier: String, defaultNamespace: String? = null): LocationIdentifier = parse(identifier, defaultNamespace = defaultNamespace).orElseThrow()
+    fun parseOrThrow(identifier: String, defaultNamespace: String? = null): LocationIdentifier =
+        parse(identifier, defaultNamespace = defaultNamespace).orElseThrow()
 
     fun isNamespace(namespace: String) = namespace.trim().isNotEmpty() && namespace.chars().allMatch {
         val character = it.toChar()
@@ -43,4 +49,5 @@ class LocationIdentifier(private val namespace: String, private val path: String
 
 }
 
-fun locationIdentifierOf(identifier: String, defaultNamespace: String? = null) = LocationIdentifiers.parseOrThrow(identifier, defaultNamespace = defaultNamespace)
+fun locationIdentifierOf(identifier: String, defaultNamespace: String? = null) =
+    LocationIdentifiers.parseOrThrow(identifier, defaultNamespace = defaultNamespace)
