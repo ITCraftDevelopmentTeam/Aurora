@@ -2,13 +2,29 @@ package pixel.aurora.parser
 
 import java.net.URI
 import java.nio.CharBuffer
-import kotlin.jvm.Throws
+import java.util.*
 
 class ParseException(message: String, val buffer: CharBuffer, val uri: URI, val parser: Parser<*>) : RuntimeException(message)
+object ParserMessages {
+
+    const val invalidSyntax = "Invalid syntax"
+    const val invalidCharacter = "Invalid character"
+    fun expect(content: String) = "Expect: '$content'"
+
+}
 
 object Parsers {
 
     val defaultURI: URI = URI.create("about:blank")
+
+    fun <T : Any> gotoWhenError(buffer: CharBuffer, position: Int = buffer.position(), block: () -> T): Result<T> {
+        return try {
+            Result.success(block())
+        } catch (error: Throwable) {
+            buffer.position(position)
+            Result.failure(error)
+        }
+    }
 
 }
 
@@ -43,3 +59,4 @@ abstract class Parser <T> {
     abstract fun parse(): T
 
 }
+

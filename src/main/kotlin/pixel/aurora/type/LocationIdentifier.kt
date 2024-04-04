@@ -22,7 +22,7 @@ object LocationIdentifiers {
 
     fun isPath(path: String) = path.trim().isNotEmpty() && path.chars().allMatch {
         val character = it.toChar()
-        character == '.' || character == '_' || character in 'A'..'Z' || character in 'a'..'z' || character in '0'..'9' || character == '/' || character == '-'
+        character == ':' || character == '.' || character == '_' || character in 'A'..'Z' || character in 'a'..'z' || character in '0'..'9' || character == '/' || character == '-'
     }
 
 }

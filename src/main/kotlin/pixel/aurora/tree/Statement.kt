@@ -14,3 +14,11 @@ class ExpressionStatement(private val expression: Expression) : Statement {
     fun getExpression() = expression
 
 }
+
+class PackageDefinitionStatement(private val location: LocationIdentifierLiteral): Statement {
+
+    override fun getStatementName() = "PackageDefinitionStatement"
+
+    fun getLocation() = location
+
+}
