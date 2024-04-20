@@ -1,6 +1,5 @@
 package pixel.aurora.tree
 
-import pixel.aurora.type.LocationIdentifier
 import java.math.BigDecimal
 
 interface Expression : Node {
@@ -35,5 +34,3 @@ open class UnknownLiteral<T>(private val literalName: String = "UnknownLiteral",
 
 class StringLiteral(literal: String) : UnknownLiteral<String>("StringLiteral", literal)
 class NumberLiteral(literal: BigDecimal) : UnknownLiteral<BigDecimal>("NumberLiteral", literal)
-class LocationIdentifierLiteral(literal: LocationIdentifier) :
-    UnknownLiteral<LocationIdentifier>("LocationIdentifierLiteral", literal)
