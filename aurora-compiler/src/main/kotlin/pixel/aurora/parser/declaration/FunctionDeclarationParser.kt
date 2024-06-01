@@ -15,7 +15,7 @@ class ExpressionFunctionDeclarationParser : Parser<ExpressionFunctionDeclaration
     }
 
     override fun parse(): ExpressionFunctionDeclaration {
-        buffer.get().expect(TokenType.IDENTIFIER).expect("fun")
+        buffer.get().expect(TokenType.IDENTIFIER).expect("function")
         val name = include(IdentifierExpressionParser())
         val parameters = include(ListParser(ParameterParser()))
         val returnType = include(typePart().optional()).getOrNull() ?: SimpleType.None
@@ -35,7 +35,7 @@ class BlockFunctionDeclarationParser : Parser<BlockFunctionDeclaration>() {
     }
 
     override fun parse(): BlockFunctionDeclaration {
-        buffer.get().expect(TokenType.IDENTIFIER).expect("fun")
+        buffer.get().expect(TokenType.IDENTIFIER).expect("function")
         val name = include(IdentifierExpressionParser())
         val parameters = include(ListParser(ParameterParser()))
         val returnType = include(typePart().optional()).getOrNull() ?: SimpleType.None

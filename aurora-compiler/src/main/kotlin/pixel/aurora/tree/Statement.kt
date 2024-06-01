@@ -22,3 +22,12 @@ object EmptyStatement : Statement {
     override fun getStatementName() = "EmptyStatement"
 
 }
+
+class ReturnStatement(private val expression: Expression?) : Statement {
+
+    override fun getStatementName() = "ReturnStatement"
+
+    @Node.Property
+    fun getExpression() = expression
+
+}

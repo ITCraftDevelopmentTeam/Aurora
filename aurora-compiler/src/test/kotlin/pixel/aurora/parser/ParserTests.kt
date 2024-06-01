@@ -17,10 +17,20 @@ class ParserTests {
                     """
                         package pixel.aurora;
                         
-                        fun main(args: Array<String>) {
+                        function main(args: Array<String>): Int {
                             println(
                                 "Hello: " + (args.first() is String).toInt().toString(2).hashCode() * 3 / 2 + 1 - 4 as Int
                             );
+                            
+                            result := runCatching {
+                                println(args);
+                            };
+                            
+                            closure := {
+                                println(result);
+                            };
+                            
+                            return 0;
                         }
                     """.trimIndent()
                 )

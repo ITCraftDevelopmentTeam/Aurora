@@ -1,9 +1,6 @@
 package pixel.aurora.parser
 
-import pixel.aurora.parser.expression.IndependentExpressionParser
-import pixel.aurora.parser.expression.IdentifierExpressionParser
-import pixel.aurora.parser.expression.LiteralExpressionParser
-import pixel.aurora.parser.expression.UnaryExpressionParser
+import pixel.aurora.parser.expression.*
 import pixel.aurora.parser.util.ListParser
 import pixel.aurora.parser.util.StringUtils.chunkPunctuationAndIdentifier
 import pixel.aurora.tokenizer.TokenType
@@ -78,7 +75,7 @@ class AssignmentExpressionParser(val left: Expression) : Parser<AssignmentExpres
 
 class ExpressionParser : Parser<Expression>() {
 
-    fun base() = LiteralExpressionParser() or IdentifierExpressionParser() or IndependentExpressionParser() or UnaryExpressionParser()
+    fun base() = LiteralExpressionParser() or IdentifierExpressionParser() or IndependentExpressionParser() or UnaryExpressionParser() or ClosureExpressionParser()
 
     fun part(base: Expression) = parser {
         include(memberExpressionPart(base) or callExpressionPart(base) or AssignmentExpressionParser(base) or BinaryExpressionParser(base) or UpdateExpressionParser(base) or asExpressionPart(base) or isExpressionPart(base))
@@ -102,8 +99,22 @@ class ExpressionParser : Parser<Expression>() {
         return@parser AsExpression(base, type, isSoft)
     }
 
-    fun callExpressionPart(base: Expression) = parser {
-        return@parser CallExpression(base, include(ListParser(ExpressionParser())))
+    fun callExpressionPart(base: Expression): Parser<CallExpression> = parser {
+        include(
+            parser<CallExpression> {
+                val arguments = include(ListParser(ExpressionParser()))
+                val closure = include(ClosureExpressionParser())
+                ClosureCallExpression(base, arguments, closure)
+            } or
+            parser<CallExpression> {
+                val arguments = include(ListParser(ExpressionParser()))
+                CallExpression(base, arguments)
+            } or
+            parser {
+                val closure = include(ClosureExpressionParser())
+                ClosureCallExpression(base, emptyList(), closure)
+            }
+        )
     }
 
     fun memberExpressionPart(base: Expression) = parser {

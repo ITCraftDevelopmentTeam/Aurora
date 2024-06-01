@@ -1,5 +1,6 @@
 package pixel.aurora.tree
 
+import pixel.aurora.tree.other.Parameter
 import java.math.BigDecimal
 
 interface Expression : Node {
@@ -59,7 +60,7 @@ class MemberExpression(private val expression: Expression, private val member: I
 
 }
 
-class CallExpression(private val callee: Expression, private val arguments: List<Expression>) : Expression {
+open class CallExpression(private val callee: Expression, private val arguments: List<Expression>) : Expression {
 
     override fun getExpressionName() = "MemberExpression"
 
@@ -68,6 +69,13 @@ class CallExpression(private val callee: Expression, private val arguments: List
 
     @Node.Property
     fun getArguments() = arguments
+
+}
+
+open class ClosureCallExpression(callee: Expression, arguments: List<Expression>, private val closureExpression: ClosureExpression) : CallExpression(callee, arguments) {
+
+    @Node.Property
+    fun getClosure() = closureExpression
 
 }
 
@@ -152,5 +160,17 @@ class IsExpression(private val expression: Expression, private val type: Type, p
 
     @Node.Property
     fun isReversed() = isReversed
+
+}
+
+class ClosureExpression(private val parameters: List<Parameter>, private val body: List<Statement>) : Expression {
+
+    @Node.Property
+    fun getParameters() = parameters
+
+    @Node.Property
+    fun getBody() = body
+
+    override fun getExpressionName() = "ClosureExpression"
 
 }
