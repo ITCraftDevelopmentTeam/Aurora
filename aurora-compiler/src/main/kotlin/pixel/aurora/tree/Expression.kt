@@ -11,12 +11,18 @@ interface Expression : Node {
 
 }
 
-class Identifier(private val name: String) : Expression {
+open class Identifier(private val name: String) : Expression {
 
     override fun getExpressionName() = "Identifier"
 
     @Node.Property
     fun getIdentifierName() = name
+
+}
+
+object ThisExpression : Identifier("this") {
+
+    override fun getExpressionName() = "ThisExpression"
 
 }
 
@@ -48,9 +54,16 @@ enum class BooleanLiteral(private val literal: Boolean) : Literal<Boolean> {
 
 object NullLiteral : UnknownLiteral<Any?>("NullLiteral", null)
 
-class MemberExpression(private val expression: Expression, private val member: Identifier) : Expression {
+class MemberExpression(
+    private val expression: Expression,
+    private val member: Identifier,
+    private val isFuzzy: Boolean = false
+) : Expression {
 
     override fun getExpressionName() = "MemberExpression"
+
+    @Node.Property
+    fun isFuzzy() = isFuzzy
 
     @Node.Property
     fun getExpression() = expression
@@ -72,14 +85,19 @@ open class CallExpression(private val callee: Expression, private val arguments:
 
 }
 
-open class ClosureCallExpression(callee: Expression, arguments: List<Expression>, private val closureExpression: ClosureExpression) : CallExpression(callee, arguments) {
+open class ClosureCallExpression(
+    callee: Expression,
+    arguments: List<Expression>,
+    private val closureExpression: ClosureExpression
+) : CallExpression(callee, arguments) {
 
     @Node.Property
     fun getClosure() = closureExpression
 
 }
 
-class AssignmentExpression(private val left: Expression, private val right: Expression, private val operator: String) : Expression {
+class AssignmentExpression(private val left: Expression, private val right: Expression, private val operator: String) :
+    Expression {
 
     override fun getExpressionName() = "AssignmentExpression"
 
@@ -94,7 +112,8 @@ class AssignmentExpression(private val left: Expression, private val right: Expr
 
 }
 
-class BinaryExpression(private val left: Expression, private val right: Expression, private val operator: String) : Expression {
+class BinaryExpression(private val left: Expression, private val right: Expression, private val operator: String) :
+    Expression {
 
     override fun getExpressionName() = "BinaryExpression"
 
@@ -133,7 +152,8 @@ class UpdateExpression(private val expression: Expression, private val operator:
 
 }
 
-class AsExpression(private val expression: Expression, private val type: Type, private val isSoft: Boolean) : Expression {
+class AsExpression(private val expression: Expression, private val type: Type, private val isSoft: Boolean) :
+    Expression {
 
     override fun getExpressionName() = "AsExpression"
 
@@ -148,7 +168,8 @@ class AsExpression(private val expression: Expression, private val type: Type, p
 
 }
 
-class IsExpression(private val expression: Expression, private val type: Type, private val isReversed: Boolean) : Expression {
+class IsExpression(private val expression: Expression, private val type: Type, private val isReversed: Boolean) :
+    Expression {
 
     override fun getExpressionName() = "IsExpression"
 
@@ -172,5 +193,27 @@ class ClosureExpression(private val parameters: List<Parameter>, private val bod
     fun getBody() = body
 
     override fun getExpressionName() = "ClosureExpression"
+
+}
+
+class DistinctCastingExpression(private val expression: Expression) : Expression {
+
+    override fun getExpressionName() = "DistinctCastingExpression"
+
+    @Node.Property
+    fun getExpression() = expression
+
+}
+
+class MemberReferenceExpression(private val member: Identifier, private val expression: Expression? = null) :
+    Expression {
+
+    @Node.Property
+    fun getMember() = member
+
+    @Node.Property
+    fun getExpression() = expression
+
+    override fun getExpressionName() = "MemberReferenceExpression"
 
 }

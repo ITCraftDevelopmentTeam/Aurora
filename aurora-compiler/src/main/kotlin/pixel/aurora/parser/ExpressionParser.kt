@@ -75,10 +75,24 @@ class AssignmentExpressionParser(val left: Expression) : Parser<AssignmentExpres
 
 class ExpressionParser : Parser<Expression>() {
 
-    fun base() = LiteralExpressionParser() or IdentifierExpressionParser() or IndependentExpressionParser() or UnaryExpressionParser() or ClosureExpressionParser()
+    fun base() =
+        LiteralExpressionParser() or IdentifierParser() or IndependentExpressionParser() or UnaryExpressionParser() or ClosureExpressionParser() or MemberReferenceExpressionParser()
 
     fun part(base: Expression) = parser {
-        include(memberExpressionPart(base) or callExpressionPart(base) or AssignmentExpressionParser(base) or BinaryExpressionParser(base) or UpdateExpressionParser(base) or asExpressionPart(base) or isExpressionPart(base))
+        include(
+            memberReferencePart(base) or distinctCastingPart(base) or memberExpressionPart(base) or callExpressionPart(
+                base
+            ) or AssignmentExpressionParser(base) or BinaryExpressionParser(base) or UpdateExpressionParser(base) or asExpressionPart(
+                base
+            ) or isExpressionPart(base)
+        )
+    }
+
+    fun distinctCastingPart(base: Expression) = parser {
+        repeat(2) {
+            buffer.get().expect("!").expect(TokenType.PUNCTUATION)
+        }
+        DistinctCastingExpression(base)
     }
 
     fun isExpressionPart(base: Expression) = parser {
@@ -106,21 +120,34 @@ class ExpressionParser : Parser<Expression>() {
                 val closure = include(ClosureExpressionParser())
                 ClosureCallExpression(base, arguments, closure)
             } or
-            parser<CallExpression> {
-                val arguments = include(ListParser(ExpressionParser()))
-                CallExpression(base, arguments)
-            } or
-            parser {
-                val closure = include(ClosureExpressionParser())
-                ClosureCallExpression(base, emptyList(), closure)
-            }
+                    parser<CallExpression> {
+                        val arguments = include(ListParser(ExpressionParser()))
+                        CallExpression(base, arguments)
+                    } or
+                    parser {
+                        val closure = include(ClosureExpressionParser())
+                        ClosureCallExpression(base, emptyList(), closure)
+                    }
         )
     }
 
+    fun memberReferencePart(base: Expression) = parser {
+        repeat(2) {
+            buffer.get().expect(TokenType.PUNCTUATION).expect(":")
+        }
+        val member = include(IdentifierParser())
+        MemberReferenceExpression(member, base)
+    }
+
     fun memberExpressionPart(base: Expression) = parser {
+        val isFuzzy = include(
+            parser {
+                buffer.get().expect(TokenType.PUNCTUATION).expect("?")
+            }.optional()
+        ).getOrNull() != null
         buffer.get().expect(TokenType.PUNCTUATION).expect(".")
-        val name = buffer.get().expect(TokenType.IDENTIFIER)
-        return@parser MemberExpression(base, Identifier(name.getRaw()))
+        val name = include(IdentifierParser())
+        return@parser MemberExpression(base, name, isFuzzy = isFuzzy)
     }
 
     override fun parse(): Expression {

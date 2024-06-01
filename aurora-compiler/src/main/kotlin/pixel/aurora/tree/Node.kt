@@ -17,6 +17,7 @@ interface Node {
     @MustBeDocumented
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Property(val name: String = "")
+
     fun getNodeName(): String
 
 }
@@ -30,11 +31,12 @@ class NodeSerializer : JsonSerializer<Node>() {
         for (member in type.memberFunctions) {
             val annotation = member.findAnnotation<Node.Property>() ?: continue
             if (member.parameters.filterNot(KParameter::isOptional).size > 1) continue
-            val name = annotation.name.takeIf(String::isNotEmpty) ?: if (member.name.startsWith("get") && member.name.length > 3) {
-                member.name.removePrefix("get").replaceFirstChar { it.lowercase() }
-            } else if (member.name.startsWith("is") && member.name.length > 2) {
-                member.name.removePrefix("is").replaceFirstChar { it.lowercase() }
-            } else continue
+            val name = annotation.name.takeIf(String::isNotEmpty)
+                ?: if (member.name.startsWith("get") && member.name.length > 3) {
+                    member.name.removePrefix("get").replaceFirstChar { it.lowercase() }
+                } else if (member.name.startsWith("is") && member.name.length > 2) {
+                    member.name.removePrefix("is").replaceFirstChar { it.lowercase() }
+                } else continue
             val self = member.parameters.first { it.name == null }
             val value = runBlocking {
                 member.callSuspendBy(mapOf(self to node))

@@ -15,7 +15,6 @@ interface Token {
     fun getTokenType(): TokenType
 
     fun getRaw(): String
-
 }
 
 open class UnknownToken(private val tokenType: TokenType, private val raw: String) : Token {

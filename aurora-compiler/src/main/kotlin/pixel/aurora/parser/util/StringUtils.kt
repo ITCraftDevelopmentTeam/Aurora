@@ -8,7 +8,7 @@ object StringUtils {
         val chunks = mutableListOf<Pair<String, TokenType>>()
         var currentIdentifier = ""
         for (character in text) {
-            if (character in 'a'..'z' || character in 'A' .. 'Z') {
+            if (character in 'a'..'z' || character in 'A'..'Z') {
                 currentIdentifier += character
             } else {
                 if (currentIdentifier.isNotEmpty()) chunks += currentIdentifier to TokenType.IDENTIFIER

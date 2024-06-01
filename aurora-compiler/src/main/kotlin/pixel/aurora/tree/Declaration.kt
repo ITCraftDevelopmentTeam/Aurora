@@ -1,6 +1,8 @@
 package pixel.aurora.tree
 
 import pixel.aurora.tree.other.Parameter
+import pixel.aurora.tree.other.TypeParameter
+import pixel.aurora.tree.other.VisibilityMode
 
 interface Declaration : Node {
 
@@ -13,53 +15,94 @@ object EmptyDeclaration : Declaration {
     override fun getDeclarationName() = "EmptyDeclaration"
 }
 
-interface FunctionDeclaration : Declaration {
+abstract class FunctionDeclaration(
+    private val name: Identifier,
+    private val typeParameters: List<TypeParameter>,
+    private val parameters: List<Parameter>,
+    private val returnType: Type,
+    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
+) : Declaration {
 
     override fun getDeclarationName() = "FunctionDeclaration"
-    fun getFunctionDeclarationName(): String
+    abstract fun getFunctionDeclarationName(): String
 
     @Node.Property
-    fun getFunctionName(): Identifier
+    fun getFunctionName(): Identifier = name
 
     @Node.Property
-    fun getFunctionParameters(): List<Parameter>
+    fun getFunctionTypeParameters() = typeParameters
 
     @Node.Property
-    fun getFunctionReturnType(): Type
+    fun getFunctionParameters(): List<Parameter> = parameters
+
+    @Node.Property
+    fun getFunctionReturnType(): Type = returnType
+
+    @Node.Property
+    fun getFunctionVisibilityMode(): VisibilityMode = visibilityMode
 
 }
 
 class BlockFunctionDeclaration(
-    private val name: Identifier,
-    private val parameters: List<Parameter>,
-    private val returnType: Type,
-    private val body: List<Statement>
-) : FunctionDeclaration {
+    name: Identifier,
+    typeParameters: List<TypeParameter>,
+    parameters: List<Parameter>,
+    returnType: Type,
+    private val body: List<Statement>,
+    visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
+) : FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode) {
 
     override fun getFunctionDeclarationName() = "BlockFunctionDeclaration"
-    override fun getFunctionName() = name
-    override fun getFunctionParameters() = parameters
-    override fun getFunctionReturnType() = returnType
 
     @Node.Property
     fun getBody() = body
+
 }
 
 class ExpressionFunctionDeclaration(
-    private val name: Identifier,
-    private val parameters: List<Parameter>,
-    private val returnType: Type,
-    private val expression: Expression
+    name: Identifier,
+    typeParameters: List<TypeParameter>,
+    parameters: List<Parameter>,
+    returnType: Type,
+    private val expression: Expression,
+    visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
 ) :
-    FunctionDeclaration {
+    FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode) {
 
     override fun getFunctionDeclarationName() = "ExpressionFunctionDeclaration"
 
-    override fun getFunctionName() = name
-    override fun getFunctionParameters() = parameters
-    override fun getFunctionReturnType() = returnType
-
     @Node.Property
     fun getExpression() = expression
+
+}
+
+class VariableDeclaration(
+    private val kind: Kind,
+    private val name: Identifier,
+    private val type: Type? = null,
+    private val init: Expression? = null,
+    private val visibilityMode: VisibilityMode = VisibilityMode.INTERNAL
+) : Declaration {
+
+    override fun getDeclarationName() = "VariableDeclaration"
+
+    enum class Kind {
+        CONST, LET;
+    }
+
+    @Node.Property
+    fun getVariableKind() = kind
+
+    @Node.Property
+    fun getVariableName() = name
+
+    @Node.Property
+    fun getVariableType() = type
+
+    @Node.Property
+    fun getVariableValue() = init
+
+    @Node.Property
+    fun getVariableVisibilityMode() = visibilityMode
 
 }

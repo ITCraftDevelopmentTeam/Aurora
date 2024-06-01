@@ -1,5 +1,7 @@
 package pixel.aurora.tree
 
+import pixel.aurora.tree.other.Parameter
+
 interface Type : Node {
 
     override fun getNodeName() = "Type"
@@ -8,10 +10,18 @@ interface Type : Node {
 
 }
 
+open class NullableType(private val type: Type) : Type {
+
+    override fun getTypeName() = "NullableType"
+
+    @Node.Property
+    fun getType() = type
+
+}
+
 open class SimpleType(
     private val name: String,
-    private val typeArguments: List<Type> = emptyList(),
-    private val nullable: Boolean = false
+    private val typeArguments: List<Type> = emptyList()
 ) : Type {
 
     object None : SimpleType("None")
@@ -24,7 +34,23 @@ open class SimpleType(
     @Node.Property
     fun getTypeParameters() = typeArguments
 
+}
+
+open class FunctionType(
+    private val parameters: List<Parameter>,
+    private val returnType: Type,
+    private val thisType: Type? = null
+) : Type {
+
+    override fun getTypeName() = "FunctionType"
+
     @Node.Property
-    fun isNullable() = nullable
+    fun getFunctionParameters() = parameters
+
+    @Node.Property
+    fun getFunctionReturnType() = returnType
+
+    @Node.Property
+    fun getFunctionThisType() = thisType
 
 }

@@ -26,10 +26,7 @@ class SimpleTypeParser : Parser<SimpleType>() {
         val typeParameters = include(
             ListParser(TypeParser(), '<', '>').optional()
         )
-        val nullable = include(
-            parser { buffer.get().expect("?").expect(TokenType.PUNCTUATION) }.optional()
-        ).getOrNull() != null
-        return SimpleType(name, typeParameters.getOrNull() ?: emptyList(), nullable)
+        return SimpleType(name, typeParameters.getOrNull() ?: emptyList())
     }
 
 }

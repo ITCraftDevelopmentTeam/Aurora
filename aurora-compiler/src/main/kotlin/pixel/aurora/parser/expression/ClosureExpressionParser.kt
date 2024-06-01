@@ -13,8 +13,9 @@ class ClosureExpressionParser : Parser<ClosureExpression>() {
         val parameters = include(
             parser {
                 val list = include(
-                    ListParser(ParameterParser(), suffix = '-')
+                    ListParser(ParameterParser(), prefix = null, suffix = null)
                 )
+                buffer.get().expect("-").expect(TokenType.PUNCTUATION)
                 buffer.get().expect(">").expect(TokenType.PUNCTUATION)
                 list
             }.optional()

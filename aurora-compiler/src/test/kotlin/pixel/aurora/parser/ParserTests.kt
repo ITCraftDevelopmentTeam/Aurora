@@ -17,20 +17,21 @@ class ParserTests {
                     """
                         package pixel.aurora;
                         
-                        function main(args: Array<String>): Int {
-                            println(
-                                "Hello: " + (args.first() is String).toInt().toString(2).hashCode() * 3 / 2 + 1 - 4 as Int
-                            );
+                        const APPLICATION_NAME: String = "Aurora";
+                        
+                        function <T : Any> main(args: Array<String?>, mapper: ((origin: String) -> String)) {
+                            println(APPLICATION_NAME);
                             
                             result := runCatching {
-                                println(args);
+                                return mapper(((args?.first()!! is String).toNumber().toString(2).hashCode() * 3 / 2 + 1 - 4 as Int).toString());
                             };
                             
-                            closure := {
+                            closure := { it: Result<Any?> ->
                                 println(result);
-                            };
+                                return "Closure End";
+                            }(result).also(::println);
                             
-                            return 0;
+                            System.exit(0);
                         }
                     """.trimIndent()
                 )

@@ -12,7 +12,7 @@ class ProgramParser : Parser<Program>() {
         val packageDeclaration = include(PackageDeclarationParser())
         val declarations = mutableListOf<Declaration>()
         while (buffer.hasNext()) {
-            declarations += include(choose(EmptyDeclarationParser, DeclarationParser()))
+            declarations += include(choose(EmptyDeclarationParser, TopLevelDeclarationParser()))
         }
         declarations.removeIf { it is EmptyDeclaration }
         return Program(packageDeclaration, declarations)
