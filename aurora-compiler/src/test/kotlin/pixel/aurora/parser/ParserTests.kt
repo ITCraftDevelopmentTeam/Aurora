@@ -18,9 +18,9 @@ class ParserTests {
                         package pixel.aurora;
                         
                         fun main(args: Array<String>) {
-                            println(args.first() is String);
-                            println(args.get(0).toInt() * 2 - 2 + 3 / 4);
-                            println("Hello, World!");
+                            println(
+                                "Hello: " + (args.first() is String).toInt().toString(2).hashCode() * 3 / 2 + 1 - 4 as Int
+                            );
                         }
                     """.trimIndent()
                 )

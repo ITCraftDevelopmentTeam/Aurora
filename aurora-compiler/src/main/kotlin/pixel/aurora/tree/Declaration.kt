@@ -13,20 +13,18 @@ object EmptyDeclaration : Declaration {
     override fun getDeclarationName() = "EmptyDeclaration"
 }
 
-class CommentsDeclaration(private val text: String, private val isBlock: Boolean = false) : Declaration {
-
-    override fun getDeclarationName() = "CommentsDeclaration"
-    fun getComments() = text
-    fun isBlock() = isBlock
-
-}
-
 interface FunctionDeclaration : Declaration {
 
     override fun getDeclarationName() = "FunctionDeclaration"
     fun getFunctionDeclarationName(): String
+
+    @Node.Property
     fun getFunctionName(): Identifier
+
+    @Node.Property
     fun getFunctionParameters(): List<Parameter>
+
+    @Node.Property
     fun getFunctionReturnType(): Type
 
 }
@@ -43,6 +41,7 @@ class BlockFunctionDeclaration(
     override fun getFunctionParameters() = parameters
     override fun getFunctionReturnType() = returnType
 
+    @Node.Property
     fun getBody() = body
 }
 
@@ -55,9 +54,12 @@ class ExpressionFunctionDeclaration(
     FunctionDeclaration {
 
     override fun getFunctionDeclarationName() = "ExpressionFunctionDeclaration"
+
     override fun getFunctionName() = name
     override fun getFunctionParameters() = parameters
     override fun getFunctionReturnType() = returnType
 
+    @Node.Property
     fun getExpression() = expression
+
 }

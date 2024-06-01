@@ -17,9 +17,14 @@ open class SimpleType(
     object None : SimpleType("None")
 
     override fun getTypeName() = "SimpleType"
+
+    @Node.Property
     fun getType() = name
 
+    @Node.Property
     fun getTypeParameters() = typeArguments
+
+    @Node.Property
     fun isNullable() = nullable
 
 }

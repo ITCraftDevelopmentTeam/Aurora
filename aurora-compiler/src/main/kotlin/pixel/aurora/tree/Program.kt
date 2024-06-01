@@ -10,9 +10,11 @@ class Program(
         fun getPackageName() = name
     }
 
+    @Node.Property
     fun getPackageDeclaration() = packageDeclaration
     override fun getNodeName() = "Program"
 
+    @Node.Property
     fun getBody() = body
 
 }

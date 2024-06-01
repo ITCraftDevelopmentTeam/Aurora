@@ -13,6 +13,8 @@ interface Expression : Node {
 class Identifier(private val name: String) : Expression {
 
     override fun getExpressionName() = "Identifier"
+
+    @Node.Property
     fun getIdentifierName() = name
 
 }
@@ -28,6 +30,8 @@ interface Literal<T> : Expression {
 open class UnknownLiteral<T>(private val literalName: String = "UnknownLiteral", private val literal: T) : Literal<T> {
 
     override fun getLiteralName() = literalName
+
+    @Node.Property
     override fun getLiteral() = literal
 
 }
@@ -47,7 +51,10 @@ class MemberExpression(private val expression: Expression, private val member: I
 
     override fun getExpressionName() = "MemberExpression"
 
+    @Node.Property
     fun getExpression() = expression
+
+    @Node.Property
     fun getMember() = member
 
 }
@@ -56,7 +63,10 @@ class CallExpression(private val callee: Expression, private val arguments: List
 
     override fun getExpressionName() = "MemberExpression"
 
+    @Node.Property
     fun getCallee() = callee
+
+    @Node.Property
     fun getArguments() = arguments
 
 }
@@ -64,8 +74,14 @@ class CallExpression(private val callee: Expression, private val arguments: List
 class AssignmentExpression(private val left: Expression, private val right: Expression, private val operator: String) : Expression {
 
     override fun getExpressionName() = "AssignmentExpression"
+
+    @Node.Property
     fun getLeft() = left
+
+    @Node.Property
     fun getRight() = right
+
+    @Node.Property
     fun getOperator() = operator
 
 }
@@ -74,8 +90,13 @@ class BinaryExpression(private val left: Expression, private val right: Expressi
 
     override fun getExpressionName() = "BinaryExpression"
 
+    @Node.Property
     fun getLeft() = left
+
+    @Node.Property
     fun getRight() = right
+
+    @Node.Property
     fun getOperator() = operator
 
 }
@@ -84,7 +105,10 @@ class UnaryExpression(private val expression: Expression, private val operator: 
 
     override fun getExpressionName() = "UnaryExpression"
 
+    @Node.Property
     fun getExpression() = expression
+
+    @Node.Property
     fun getOperator() = operator
 
 }
@@ -93,7 +117,10 @@ class UpdateExpression(private val expression: Expression, private val operator:
 
     override fun getExpressionName() = "UpdateExpression"
 
+    @Node.Property
     fun getExpression() = expression
+
+    @Node.Property
     fun getOperator() = operator
 
 }
@@ -102,8 +129,13 @@ class AsExpression(private val expression: Expression, private val type: Type, p
 
     override fun getExpressionName() = "AsExpression"
 
+    @Node.Property
     fun getExpression() = expression
+
+    @Node.Property
     fun getType() = type
+
+    @Node.Property
     fun isSoft() = isSoft
 
 }
@@ -112,8 +144,13 @@ class IsExpression(private val expression: Expression, private val type: Type, p
 
     override fun getExpressionName() = "IsExpression"
 
+    @Node.Property
     fun getExpression() = expression
+
+    @Node.Property
     fun getType() = type
+
+    @Node.Property
     fun isReversed() = isReversed
 
 }

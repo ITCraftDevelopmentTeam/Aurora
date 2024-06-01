@@ -11,6 +11,8 @@ interface Statement : Node {
 class ExpressionStatement(private val expression: Expression) : Statement {
 
     override fun getStatementName() = "ExpressionStatement"
+
+    @Node.Property
     fun getExpression() = expression
 
 }
