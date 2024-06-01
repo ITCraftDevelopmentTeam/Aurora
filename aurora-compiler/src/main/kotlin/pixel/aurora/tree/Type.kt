@@ -10,16 +10,16 @@ interface Type : Node {
 
 open class SimpleType(
     private val name: String,
-    private val typeParameters: List<Type> = emptyList(),
+    private val typeArguments: List<Type> = emptyList(),
     private val nullable: Boolean = false
 ) : Type {
 
     object None : SimpleType("None")
 
     override fun getTypeName() = "SimpleType"
-    override fun getNodeName() = name
+    fun getType() = name
 
-    fun getTypeParameters() = typeParameters
+    fun getTypeParameters() = typeArguments
     fun isNullable() = nullable
 
 }

@@ -14,3 +14,9 @@ class ExpressionStatement(private val expression: Expression) : Statement {
     fun getExpression() = expression
 
 }
+
+object EmptyStatement : Statement {
+
+    override fun getStatementName() = "EmptyStatement"
+
+}

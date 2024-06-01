@@ -17,7 +17,11 @@ class ParserTests {
                     """
                         package pixel.aurora;
                         
-                        fun toString(obj: Any?): String = obj.toString();
+                        fun main(args: Array<String>) {
+                            println(args.first() is String);
+                            println(args.get(0).toInt() * 2 - 2 + 3 / 4);
+                            println("Hello, World!");
+                        }
                     """.trimIndent()
                 )
             )

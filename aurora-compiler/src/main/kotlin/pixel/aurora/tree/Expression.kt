@@ -61,3 +61,59 @@ class CallExpression(private val callee: Expression, private val arguments: List
 
 }
 
+class AssignmentExpression(private val left: Expression, private val right: Expression, private val operator: String) : Expression {
+
+    override fun getExpressionName() = "AssignmentExpression"
+    fun getLeft() = left
+    fun getRight() = right
+    fun getOperator() = operator
+
+}
+
+class BinaryExpression(private val left: Expression, private val right: Expression, private val operator: String) : Expression {
+
+    override fun getExpressionName() = "BinaryExpression"
+
+    fun getLeft() = left
+    fun getRight() = right
+    fun getOperator() = operator
+
+}
+
+class UnaryExpression(private val expression: Expression, private val operator: String) : Expression {
+
+    override fun getExpressionName() = "UnaryExpression"
+
+    fun getExpression() = expression
+    fun getOperator() = operator
+
+}
+
+class UpdateExpression(private val expression: Expression, private val operator: String) : Expression {
+
+    override fun getExpressionName() = "UpdateExpression"
+
+    fun getExpression() = expression
+    fun getOperator() = operator
+
+}
+
+class AsExpression(private val expression: Expression, private val type: Type, private val isSoft: Boolean) : Expression {
+
+    override fun getExpressionName() = "AsExpression"
+
+    fun getExpression() = expression
+    fun getType() = type
+    fun isSoft() = isSoft
+
+}
+
+class IsExpression(private val expression: Expression, private val type: Type, private val isReversed: Boolean) : Expression {
+
+    override fun getExpressionName() = "IsExpression"
+
+    fun getExpression() = expression
+    fun getType() = type
+    fun isReversed() = isReversed
+
+}

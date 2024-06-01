@@ -3,10 +3,11 @@ package pixel.aurora.parser.util
 import pixel.aurora.parser.*
 import pixel.aurora.tokenizer.TokenType
 
-class ListParser<T : Any>(val element: Parser<T>, val prefix: Char = '(', val suffix: Char = ')') : Parser<List<T>>() {
+class ListParser<T : Any>(val element: Parser<T>, val prefix: Char = '(', val suffix: Char = ')', val separator: Char? = ',') : Parser<List<T>>() {
 
     fun part() = parser {
-        buffer.get().expect(",").expect(TokenType.PUNCTUATION)
+        if (separator != null)
+            buffer.get().expect(separator.toString()).expect(TokenType.PUNCTUATION)
         return@parser include(element)
     }
 

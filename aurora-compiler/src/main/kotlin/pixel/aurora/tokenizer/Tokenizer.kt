@@ -1,6 +1,7 @@
 package pixel.aurora.tokenizer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import pixel.aurora.Aurora
 import pixel.aurora.parser.BaseParseException
 import pixel.aurora.parser.TokenizerException
@@ -144,7 +145,7 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.BL
         }
         raw += buffer.get()
         try {
-            return@runCatching StringToken(raw, objectMapper.writeValueAsString(raw))
+            return@runCatching StringToken(raw, objectMapper.readValue<String>(raw))
         } catch (_: Throwable) {
             throw makeError("Invalid string literal: $raw")
         }

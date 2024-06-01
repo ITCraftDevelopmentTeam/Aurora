@@ -62,7 +62,14 @@ fun <R : Any> Parser<R>.optional(rollback: Boolean = true) = object : Parser<Res
 
 }
 
-fun <T : Any> choose(vararg choices: Parser<out T>) = object : Parser<T>() {
+@Suppress("UNCHECKED_CAST")
+infix fun <T : Any> Parser<out T>.or(other: Parser<out T>): ChoiceParser<T> {
+    return if (this is ChoiceParser<*>) choose(*this.choices, other) as ChoiceParser<T>
+    else if (other is ChoiceParser<*>) choose(this, *other.choices) as ChoiceParser<T>
+    else choose(this, other)
+}
+
+class ChoiceParser<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
 
     override fun parse(): T {
         val exceptions = mutableListOf<Throwable>()
@@ -75,6 +82,8 @@ fun <T : Any> choose(vararg choices: Parser<out T>) = object : Parser<T>() {
     }
 
 }
+
+fun <T : Any> choose(vararg choices: Parser<out T>) = ChoiceParser(*choices)
 
 fun <T : Any> parser(block: Parser<T>.() -> T) = object : Parser<T>() {
     override fun parse() = block()
