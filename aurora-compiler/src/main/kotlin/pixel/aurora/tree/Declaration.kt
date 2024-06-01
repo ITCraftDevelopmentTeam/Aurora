@@ -7,6 +7,10 @@ interface Declaration : Node {
 
 }
 
+object EmptyDeclaration : Declaration {
+    override fun getDeclarationName() = "EmptyDeclaration"
+}
+
 class CommentsDeclaration(private val text: String, private val isBlock: Boolean = false) : Declaration {
 
     override fun getDeclarationName() = "CommentsDeclaration"

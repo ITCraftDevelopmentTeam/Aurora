@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 enum class TokenType {
 
-    UNKNOWN, NULL, BOOLEAN, STRING, NUMERIC, IDENTIFIER, PUNCTUATION, SPACE;
+    UNKNOWN, NULL, BOOLEAN, STRING, NUMERIC, IDENTIFIER, PUNCTUATION;
 
     fun token(raw: String) = UnknownToken(this, raw)
 
@@ -43,7 +43,7 @@ class NumericToken(raw: String, private val parsed: BigDecimal) : UnknownToken(T
 
 object TokenHelper {
 
-    const val punctuations = "+-*/<>,.;:?()[]{}!%|&="
+    const val PUNCTUATIONS = "+-*/<>,.;:?()[]{}!%|&="
 
 }
 

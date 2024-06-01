@@ -11,10 +11,9 @@ class TokenBuffer(private val tokenizer: Tokenizer) : Iterable<Token> {
     override fun iterator() = tokens.iterator()
 
     fun getTokenizer() = tokenizer
-    fun getPosition() = position
     fun getTokens() = tokens
 
-    fun get() = get(position ++)
+    fun get() = get(position++)
     operator fun get(position: Int) = tokens.getOrNull(position) ?: throw BufferUnderflowException()
 
     fun position() = position
@@ -22,5 +21,6 @@ class TokenBuffer(private val tokenizer: Tokenizer) : Iterable<Token> {
 
     fun next() = next(1)
     fun next(offset: Int) = position(position() + offset)
+    fun hasNext() = position < tokens.size
 
 }

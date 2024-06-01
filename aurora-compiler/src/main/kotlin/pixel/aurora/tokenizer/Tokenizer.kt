@@ -1,15 +1,15 @@
 package pixel.aurora.tokenizer
 
-import com.google.gson.GsonBuilder
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import pixel.aurora.Aurora
 import pixel.aurora.parser.BaseParseException
-import pixel.aurora.parser.TokenizerParseException
+import pixel.aurora.parser.TokenizerException
 import java.net.URI
 import java.nio.CharBuffer
 
-class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.blankURI) {
+class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.BLANK_URI) {
 
-    private val gson = GsonBuilder().create()
+    private val objectMapper = jacksonObjectMapper()
 
     fun getBuffer() = buffer
     fun getURI() = uri
@@ -18,24 +18,18 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
         buffer.position(0)
     }
 
-    fun makeError(message: String) = TokenizerParseException(message, buffer, uri, this)
+    fun makeError(message: String) = TokenizerException(message, buffer, uri, this)
 
     fun tokenize(): Sequence<Token> = sequence {
-        var space = ""
         while (true) {
             if (buffer.isEmpty()) break
             val character = buffer.get()
-            if (character.isWhitespace() || character in "\n\r") {
-                space += character
-                continue
-            }
-            if (space.isNotEmpty()) yield(TokenType.SPACE.token(space))
-            space = ""
+            if (character.isWhitespace() || character in "\n\r") continue
             buffer.position(buffer.position() - 1)
             if (character.isJavaIdentifierStart()) yield(lexIdentifier())
             else if (character == '"') yield(lexString())
             else if (isNumeric()) yield(lexNumeric())
-            else if (character in TokenHelper.punctuations) yield(TokenType.PUNCTUATION.token(buffer.get().toString()))
+            else if (character in TokenHelper.PUNCTUATIONS) yield(TokenType.PUNCTUATION.token(buffer.get().toString()))
             else throw makeError("Invalid syntax")
         }
     }
@@ -56,7 +50,9 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
             } catch (_: Throwable) {
                 break
             }
-            if (!(character.isDigit() || (character == '.' && '.' !in raw) || (character.lowercase() == "e" && 'e' !in raw.lowercase()) || (character in "+-" && (raw.last().lowercase() == "e")))) {
+            if (!(character.isDigit() || (character == '.' && '.' !in raw) || (character.lowercase() == "e" && 'e' !in raw.lowercase()) || (character in "+-" && (raw.last()
+                    .lowercase() == "e")))
+            ) {
                 buffer.position(buffer.position() - 1)
                 break
             }
@@ -83,7 +79,7 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
             raw += character
         }
         if (raw.length == 2) throw makeError("Invalid or unexpected token")
-        return NumericToken(raw, raw.slice(2 until raw.length).toBigInteger(8).toBigDecimal())
+        return NumericToken(raw, raw.slice(2..<raw.length).toBigInteger(8).toBigDecimal())
     }
 
     fun lexBinaryNumber(): Token {
@@ -103,7 +99,7 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
             raw += character
         }
         if (raw.length == 2) throw makeError("Invalid or unexpected token")
-        return NumericToken(raw, raw.slice(2 until raw.length).toBigInteger(2).toBigDecimal())
+        return NumericToken(raw, raw.slice(2..<raw.length).toBigInteger(2).toBigDecimal())
     }
 
     fun lexHexNumber(): Token {
@@ -116,14 +112,14 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
             } catch (_: Throwable) {
                 break
             }
-            if (!(character.isDigit() || character in 'a' .. 'f' || character in 'A' .. 'F')) {
+            if (!(character.isDigit() || character in 'a'..'f' || character in 'A'..'F')) {
                 buffer.position(buffer.position() - 1)
                 break
             }
             raw += character
         }
         if (raw.length == 2) throw makeError("Invalid or unexpected token")
-        return NumericToken(raw, raw.slice(2 until raw.length).toBigInteger(16).toBigDecimal())
+        return NumericToken(raw, raw.slice(2..<raw.length).toBigInteger(16).toBigDecimal())
     }
 
     fun isNumeric(): Boolean {
@@ -132,7 +128,8 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
         if (character == '.') {
             try {
                 if (buffer.get(buffer.position() + 1).isDigit()) return true
-            } catch (_: Throwable) {}
+            } catch (_: Throwable) {
+            }
         }
         return false
     }
@@ -147,7 +144,7 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
         }
         raw += buffer.get()
         try {
-            return@runCatching StringToken(raw, gson.fromJson(raw, String::class.java))
+            return@runCatching StringToken(raw, objectMapper.writeValueAsString(raw))
         } catch (_: Throwable) {
             throw makeError("Invalid string literal: $raw")
         }
@@ -168,7 +165,8 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.bl
                     break
                 }
             }
-        } catch (_: Throwable) {}
+        } catch (_: Throwable) {
+        }
         return when (identifier) {
             "null" -> TokenType.NULL
             "true", "false" -> TokenType.BOOLEAN
