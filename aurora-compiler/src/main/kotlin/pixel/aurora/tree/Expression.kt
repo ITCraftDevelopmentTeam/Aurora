@@ -42,3 +42,22 @@ enum class BooleanLiteral(private val literal: Boolean) : Literal<Boolean> {
 }
 
 object NullLiteral : UnknownLiteral<Any?>("NullLiteral", null)
+
+class MemberExpression(private val expression: Expression, private val member: Identifier) : Expression {
+
+    override fun getExpressionName() = "MemberExpression"
+
+    fun getExpression() = expression
+    fun getMember() = member
+
+}
+
+class CallExpression(private val callee: Expression, private val arguments: List<Expression>) : Expression {
+
+    override fun getExpressionName() = "MemberExpression"
+
+    fun getCallee() = callee
+    fun getArguments() = arguments
+
+}
+

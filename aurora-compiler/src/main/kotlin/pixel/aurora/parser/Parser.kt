@@ -75,3 +75,7 @@ fun <T : Any> choose(vararg choices: Parser<out T>) = object : Parser<T>() {
     }
 
 }
+
+fun <T : Any> parser(block: Parser<T>.() -> T) = object : Parser<T>() {
+    override fun parse() = block()
+}

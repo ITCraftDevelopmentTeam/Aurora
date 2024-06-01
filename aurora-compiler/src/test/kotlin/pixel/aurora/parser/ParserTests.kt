@@ -15,18 +15,20 @@ class ParserTests {
             Tokenizer(
                 CharBuffer.wrap(
                     """
-                        fun i2 = 2;
-                        fun i3 = 3;
+                        package pixel.aurora;
+                        
+                        fun toString(obj: Any?): String = obj.toString();
                     """.trimIndent()
                 )
             )
         )
         val parser = ProgramParser()
         parser.setState(Parser.State(Aurora.BLANK_URI, buffer))
+        val program = parser.parse()
         println(
             jacksonObjectMapper()
                 .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(parser.parse())
+                .writeValueAsString(program)
         )
     }
 

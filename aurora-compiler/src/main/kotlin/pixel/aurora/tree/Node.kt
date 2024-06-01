@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import kotlinx.coroutines.runBlocking
-import java.util.*
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.memberFunctions
@@ -25,9 +24,13 @@ class NodeSerializer : JsonSerializer<Node>() {
         val result = mutableMapOf<String, Any?>()
         result += "class" to type.jvmName
         for (member in type.memberFunctions) {
-            if (!member.name.startsWith("get") || member.name.length <= 3) continue
             if (member.parameters.filterNot(KParameter::isOptional).size > 1) continue
-            val name = member.name.removePrefix("get").replaceFirstChar { it.lowercase(Locale.ROOT) }
+            val name = if (member.name.startsWith("get") && member.name.length > 3) {
+                member.name.removePrefix("get").replaceFirstChar { it.lowercase() }
+            } else if (member.name.startsWith("is") && member.name.length > 2) {
+                member.name.removePrefix("is").replaceFirstChar { it.lowercase() }
+            } else null
+            if (name == null) continue
             val self = member.parameters.first { it.name == null }
             val value = runBlocking {
                 member.callSuspendBy(mapOf(self to node))
