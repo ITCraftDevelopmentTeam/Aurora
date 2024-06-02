@@ -3,14 +3,13 @@ package pixel.aurora.compiler.parser.other
 import pixel.aurora.compiler.parser.*
 import pixel.aurora.compiler.parser.type.SimpleTypeParser
 import pixel.aurora.compiler.parser.util.ListParser
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.SimpleType
 import pixel.aurora.compiler.tree.other.ClassCall
 
 class ExtendPartParser : Parser<Pair<ClassCall, List<SimpleType>>>() {
 
     override fun parse(): Pair<ClassCall, List<SimpleType>> {
-        buffer.get().expect(":").expect(TokenType.PUNCTUATION)
+        buffer.get().expectPunctuation(':')
         val extends = include(
             parser {
                 val type = include(SimpleTypeParser())

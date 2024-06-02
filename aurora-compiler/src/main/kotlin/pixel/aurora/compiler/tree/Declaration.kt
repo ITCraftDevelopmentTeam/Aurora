@@ -201,3 +201,10 @@ class SingletonObjectDeclaration(
     fun getObjectVisibilityMode() = visibilityMode
 
 }
+
+abstract class ClassDeclaration : Declaration {
+
+    override fun getDeclarationName() = "ClassDeclaration"
+    abstract fun getClassDeclarationName(): String
+
+}

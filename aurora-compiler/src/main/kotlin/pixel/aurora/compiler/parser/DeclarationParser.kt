@@ -6,7 +6,7 @@ import pixel.aurora.compiler.tree.Declaration
 class CommonDeclarationParser : Parser<Declaration>() {
 
     override fun parse(): Declaration {
-        return include(EmptyDeclarationParser or FunctionDeclarationParser() or VariableDeclarationParser())
+        return include(EmptyDeclarationParser() or FunctionDeclarationParser() or VariableDeclarationParser())
     }
 
 }

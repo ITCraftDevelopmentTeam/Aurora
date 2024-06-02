@@ -51,14 +51,16 @@ open class UnknownLiteral<T>(private val literalName: String = "UnknownLiteral",
 
 class StringLiteral(literal: String) : UnknownLiteral<String>("StringLiteral", literal)
 class NumberLiteral(literal: BigDecimal) : UnknownLiteral<BigDecimal>("NumberLiteral", literal)
-enum class BooleanLiteral(private val literal: Boolean) : Literal<Boolean> {
-    TRUE(true), FALSE(false);
+open class BooleanLiteral(private val literal: Boolean) : Literal<Boolean> {
+
+    class True : BooleanLiteral(true)
+    class False : BooleanLiteral(false)
 
     override fun getLiteral() = literal
     override fun getLiteralName() = "BooleanLiteral"
 }
 
-object NullLiteral : UnknownLiteral<Any?>("NullLiteral", null)
+class NullLiteral : UnknownLiteral<Any?>("NullLiteral", null)
 
 class MemberExpression(
     private val expression: Expression,

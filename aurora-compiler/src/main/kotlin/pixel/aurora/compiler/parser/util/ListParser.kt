@@ -1,7 +1,6 @@
 package pixel.aurora.compiler.parser.util
 
 import pixel.aurora.compiler.parser.*
-import pixel.aurora.compiler.tokenizer.TokenType
 
 class ListParser<T : Any>(
     val element: Parser<T>,
@@ -12,14 +11,14 @@ class ListParser<T : Any>(
 
     fun part() = parser {
         if (separator != null) {
-            for (character in separator) buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+            for (character in separator) buffer.get().expectPunctuation(character)
         }
         return@parser include(element)
     }
 
     override fun parse(): List<T> {
         if (prefix != null) {
-            for (character in prefix) buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+            for (character in prefix) buffer.get().expectPunctuation(character)
         }
         val arguments = mutableListOf<T>()
         val first = include(element.optional()).getOrNull()
@@ -32,7 +31,7 @@ class ListParser<T : Any>(
             }
         }
         if (suffix != null) {
-            for (character in suffix) buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+            for (character in suffix) buffer.get().expectPunctuation(character)
         }
         return arguments
     }

@@ -7,7 +7,7 @@ dependencies {
     api(project(":aurora-common"))
     api(project(":aurora-compiler"))
 
-
+    implementation("net.bytebuddy:byte-buddy:1.14.17")
 }
 
 dependencies {

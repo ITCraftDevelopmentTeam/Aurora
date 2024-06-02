@@ -17,6 +17,9 @@ interface Token {
     fun getRaw(): String
 }
 
+fun Token.isToken(raw: String? = null, type: TokenType? = null) =
+    (raw ?: getRaw()) == getRaw() && (type ?: getTokenType()) == getTokenType()
+
 open class UnknownToken(private val tokenType: TokenType, private val raw: String) : Token {
 
     override fun getTokenType() = tokenType

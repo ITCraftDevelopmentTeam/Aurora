@@ -31,6 +31,9 @@ abstract class Parser<T : Any> {
             throw makeError("Invalid token '${this.getRaw()}', did you mean '$raw'?")
     }
 
+    fun Token.expectIdentifier(identifier: String) = expect(TokenType.IDENTIFIER).expect(identifier)
+    fun Token.expectPunctuation(character: Char) = expect(TokenType.PUNCTUATION).expect(character.toString())
+
 }
 
 

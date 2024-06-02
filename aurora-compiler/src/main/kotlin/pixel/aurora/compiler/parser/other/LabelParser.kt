@@ -4,14 +4,16 @@ import pixel.aurora.compiler.parser.Parser
 import pixel.aurora.compiler.parser.buffer
 import pixel.aurora.compiler.parser.expression.IdentifierParser
 import pixel.aurora.compiler.parser.include
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.Identifier
 
-class LabelParser : Parser<Identifier>() {
+class LabelParser(private val left: Boolean = true) : Parser<Identifier>() {
 
     override fun parse(): Identifier {
-        buffer.get().expect("@").expect(TokenType.PUNCTUATION)
-        return include(IdentifierParser())
+        return if (left) buffer.get().expectPunctuation('@').let {
+            include(IdentifierParser())
+        } else include(IdentifierParser()).also {
+            buffer.get().expectPunctuation('@')
+        }
     }
 
 }

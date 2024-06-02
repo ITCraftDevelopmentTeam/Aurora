@@ -21,13 +21,13 @@ class VariableDeclarationParser : Parser<VariableDeclaration>() {
         val name = include(IdentifierParser())
         val type = include(
             parser {
-                buffer.get().expect(TokenType.PUNCTUATION).expect(":")
+                buffer.get().expectPunctuation(':')
                 include(TypeParser())
             }.optional()
         )
-        buffer.get().expect(TokenType.PUNCTUATION).expect("=")
+        buffer.get().expectPunctuation('=')
         val init = include(ExpressionParser().optional())
-        buffer.get().expect(TokenType.PUNCTUATION).expect(";")
+        buffer.get().expectPunctuation(';')
         if (kind == VariableDeclaration.Kind.CONST && init.getOrNull() == null) throw makeError("Missing initializer in const declaration")
         return VariableDeclaration(
             kind,

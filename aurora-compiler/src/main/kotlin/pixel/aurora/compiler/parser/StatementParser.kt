@@ -10,7 +10,7 @@ class StatementParser : Parser<Statement>() {
 
     override fun parse(): Statement {
         return include(
-            ReturnStatementParser() or EmptyStatementParser or ExpressionStatementParser() or InnerDeclarationStatementParser()
+            ReturnStatementParser() or EmptyStatementParser() or ExpressionStatementParser() or InnerDeclarationStatementParser()
         )
     }
 

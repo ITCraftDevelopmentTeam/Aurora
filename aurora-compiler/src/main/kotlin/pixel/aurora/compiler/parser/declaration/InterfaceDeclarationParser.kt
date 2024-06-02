@@ -6,7 +6,6 @@ import pixel.aurora.compiler.parser.other.TypeParameterParser
 import pixel.aurora.compiler.parser.other.VisibilityModeParser
 import pixel.aurora.compiler.parser.type.SimpleTypeParser
 import pixel.aurora.compiler.parser.util.ListParser
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.InterfaceDeclaration
 import pixel.aurora.compiler.tree.VariableDeclaration
 import pixel.aurora.compiler.tree.other.VisibilityMode
@@ -15,7 +14,7 @@ class InterfaceDeclarationParser : Parser<InterfaceDeclaration>() {
 
     override fun parse(): InterfaceDeclaration {
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
-        buffer.get().expect("interface").expect(TokenType.IDENTIFIER)
+        buffer.get().expectIdentifier("interface")
         val name = include(IdentifierParser())
         val typeParameters = include(ListParser(TypeParameterParser(), "<", ">").optional()).getOrElse { emptyList() }
         val implements = include(implementsPart().optional()).getOrElse { emptyList() }

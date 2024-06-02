@@ -3,7 +3,6 @@ package pixel.aurora.compiler.parser
 import pixel.aurora.compiler.parser.type.FunctionTypeParser
 import pixel.aurora.compiler.parser.type.IndependentTypeParser
 import pixel.aurora.compiler.parser.type.SimpleTypeParser
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.NullableType
 import pixel.aurora.compiler.tree.Type
 
@@ -11,7 +10,7 @@ class TypeParser : Parser<Type>() {
 
     fun nullablePart(base: Type) = parser {
         if (base is NullableType) throw makeError("Unexpected '?'")
-        buffer.get().expect("?").expect(TokenType.PUNCTUATION)
+        buffer.get().expectPunctuation('?')
         NullableType(base)
     }
 

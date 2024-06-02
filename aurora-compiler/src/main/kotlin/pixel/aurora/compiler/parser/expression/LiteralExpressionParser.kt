@@ -14,8 +14,8 @@ class LiteralExpressionParser : Parser<Literal<*>>() {
         is StringToken -> StringLiteral(literal.getString())
         is NumericToken -> NumberLiteral(literal.getNumber())
         else -> when (literal.getTokenType()) {
-            TokenType.BOOLEAN -> if (literal.isRaw("true")) BooleanLiteral.TRUE else BooleanLiteral.FALSE
-            TokenType.NULL -> NullLiteral
+            TokenType.BOOLEAN -> if (literal.isRaw("true")) BooleanLiteral.True() else BooleanLiteral.False()
+            TokenType.NULL -> NullLiteral()
             else -> throw makeError("Invalid syntax")
         }
     }

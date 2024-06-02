@@ -5,7 +5,6 @@ import pixel.aurora.compiler.parser.expression.IdentifierParser
 import pixel.aurora.compiler.parser.other.TypeParameterParser
 import pixel.aurora.compiler.parser.other.VisibilityModeParser
 import pixel.aurora.compiler.parser.util.ListParser
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.*
 import pixel.aurora.compiler.tree.other.Argument
 import pixel.aurora.compiler.tree.other.Parameter
@@ -47,10 +46,10 @@ class TypeDeclarationParser : Parser<Declaration>() {
 
     override fun parse(): Declaration {
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
-        buffer.get().expect("type").expect(TokenType.IDENTIFIER)
+        buffer.get().expectIdentifier("type")
         val name = include(IdentifierParser())
         val typeParameters = include(ListParser(TypeParameterParser(), "<", ">").optional()).getOrElse { emptyList() }
-        buffer.get().expect("=").expect(TokenType.PUNCTUATION)
+        buffer.get().expectPunctuation('=')
         val result = include(
             tupleTypeAlias(name, typeParameters, visibilityMode) or simpleTypeAlias(
                 name,
@@ -58,7 +57,7 @@ class TypeDeclarationParser : Parser<Declaration>() {
                 visibilityMode
             )
         )
-        buffer.get().expect(";").expect(TokenType.PUNCTUATION)
+        buffer.get().expectPunctuation(';')
         return result
     }
 

@@ -5,13 +5,12 @@ import pixel.aurora.compiler.parser.other.ArgumentParser
 import pixel.aurora.compiler.parser.other.NamedArgumentParser
 import pixel.aurora.compiler.parser.util.ListParser
 import pixel.aurora.compiler.parser.util.StringUtils.chunkPunctuationAndIdentifier
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.*
 
 class BinaryExpressionParser(val left: Expression) : Parser<BinaryExpression>() {
 
     fun operator(operator: String) = parser {
-        for (character in operator) buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+        for (character in operator) buffer.get().expectPunctuation(character)
         return@parser BinaryExpression(left, include(ExpressionParser()), operator)
     }
 
@@ -43,7 +42,7 @@ class UpdateExpressionParser(val left: Expression) : Parser<UpdateExpression>() 
 
     fun operator(operator: String) = parser {
         for (character in operator) {
-            buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+            buffer.get().expectPunctuation(character)
         }
         return@parser UpdateExpression(left, operator)
     }
@@ -60,7 +59,7 @@ class AssignmentExpressionParser(val left: Expression) : Parser<AssignmentExpres
 
     fun operator(operator: String) = parser {
         for (character in operator) {
-            buffer.get().expect(character.toString()).expect(TokenType.PUNCTUATION)
+            buffer.get().expectPunctuation(character)
         }
         val right = include(ExpressionParser())
         return@parser AssignmentExpression(left, right, operator)
@@ -99,24 +98,24 @@ class ExpressionParser : Parser<Expression>() {
 
     fun distinctCastingPart(base: Expression) = parser {
         repeat(2) {
-            buffer.get().expect("!").expect(TokenType.PUNCTUATION)
+            buffer.get().expectPunctuation('!')
         }
         DistinctCastingExpression(base)
     }
 
     fun isExpressionPart(base: Expression) = parser {
         val isReversed = include(
-            parser { buffer.get().expect("!").expect(TokenType.PUNCTUATION) }.optional()
+            parser { buffer.get().expectPunctuation('!') }.optional()
         ).getOrNull() != null
-        buffer.get().expect("is").expect(TokenType.IDENTIFIER)
+        buffer.get().expectIdentifier("is")
         val type = include(TypeParser())
         return@parser IsExpression(base, type, isReversed)
     }
 
     fun asExpressionPart(base: Expression) = parser {
-        buffer.get().expect("as").expect(TokenType.IDENTIFIER)
+        buffer.get().expectIdentifier("as")
         val isSoft = include(
-            parser { buffer.get().expect("?").expect(TokenType.PUNCTUATION) }.optional()
+            parser { buffer.get().expectPunctuation('?') }.optional()
         ).getOrNull() != null
         val type = include(TypeParser())
         return@parser AsExpression(base, type, isSoft)
@@ -141,7 +140,7 @@ class ExpressionParser : Parser<Expression>() {
 
     fun memberReferencePart(base: Expression) = parser {
         repeat(2) {
-            buffer.get().expect(TokenType.PUNCTUATION).expect(":")
+            buffer.get().expectPunctuation(':')
         }
         val member = include(IdentifierParser())
         MemberReferenceExpression(member, base)
@@ -150,10 +149,10 @@ class ExpressionParser : Parser<Expression>() {
     fun memberExpressionPart(base: Expression) = parser {
         val isFuzzy = include(
             parser {
-                buffer.get().expect(TokenType.PUNCTUATION).expect("?")
+                buffer.get().expectPunctuation('?')
             }.optional()
         ).getOrNull() != null
-        buffer.get().expect(TokenType.PUNCTUATION).expect(".")
+        buffer.get().expectPunctuation('.')
         val name = include(IdentifierParser())
         return@parser MemberExpression(base, name, isFuzzy = isFuzzy)
     }

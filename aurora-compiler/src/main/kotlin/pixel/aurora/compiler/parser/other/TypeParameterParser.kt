@@ -2,7 +2,6 @@ package pixel.aurora.compiler.parser.other
 
 import pixel.aurora.compiler.parser.*
 import pixel.aurora.compiler.parser.expression.IdentifierParser
-import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tree.other.TypeParameter
 
 class TypeParameterParser : Parser<TypeParameter>() {
@@ -11,7 +10,7 @@ class TypeParameterParser : Parser<TypeParameter>() {
         val name = include(IdentifierParser())
         val type = include(
             parser {
-                buffer.get().expect(":").expect(TokenType.PUNCTUATION)
+                buffer.get().expectPunctuation(':')
                 include(TypeParser())
             }.optional()
         )
