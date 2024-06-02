@@ -7,6 +7,7 @@ import pixel.aurora.compiler.tokenizer.TokenBuffer
 import pixel.aurora.compiler.tokenizer.Tokenizer
 import java.nio.CharBuffer
 
+
 class ParserTests {
 
     @Test
@@ -15,8 +16,15 @@ class ParserTests {
             Tokenizer(
                 CharBuffer.wrap(
                     """
+                        /**
+                         * Block Comment
+                         */
+                        
                         @[file:Program];
                         package pixel.aurora;
+                        
+                        import pixel.aurora.lang.Singleton;
+                        import pixel.aurora.util.*; 
                         
                         @[VariableDeclaration]
                         const APPLICATION_NAME: String = "Aurora";
@@ -24,7 +32,7 @@ class ParserTests {
                         const OBJECT: Any = object : Any(), Interface {
                             const type = "Expression";
                         };
-                        
+                   
                         object Singleton : Any(), Interface {
                             const type = "Declaration";
                         }

@@ -21,13 +21,26 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = AuroraCom
 
     fun makeError(message: String) = TokenizerException(message, buffer, uri, this)
 
+    fun lexBlockComment() {
+        buffer.position(buffer.position() + 2)
+        var last: Char = buffer.get()
+        while (true) {
+            val current = buffer.get()
+            if (current == '/' && last == '*') break
+            last = current
+        }
+    }
+
     fun tokenize(): Sequence<Token> = sequence {
         while (true) {
             if (buffer.isEmpty()) break
             val character = buffer.get()
             if (character.isWhitespace() || character in "\n\r") continue
             buffer.position(buffer.position() - 1)
-            if (character.lowercaseChar() == 'i' && buffer.get(buffer.position() + 1) == '"') {
+            if (character == '/' && buffer.get(buffer.position() + 1) == '*') {
+                lexBlockComment()
+                continue
+            } else if (character.lowercaseChar() == 'i' && buffer.get(buffer.position() + 1) == '"') {
                 buffer.get()
                 yield(TokenType.IDENTIFIER.token((lexString() as StringToken).getString()))
             } else if (character.lowercaseChar() == 'r' && buffer.get(buffer.position() + 1) == '"') {

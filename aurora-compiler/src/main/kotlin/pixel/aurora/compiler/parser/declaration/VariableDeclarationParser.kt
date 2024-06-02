@@ -28,7 +28,6 @@ class VariableDeclarationParser : Parser<VariableDeclaration>() {
         buffer.get().expectPunctuation('=')
         val init = include(ExpressionParser().optional())
         buffer.get().expectPunctuation(';')
-        if (kind == VariableDeclaration.Kind.CONST && init.getOrNull() == null) throw makeError("Missing initializer in const declaration")
         return VariableDeclaration(
             kind,
             name,

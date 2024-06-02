@@ -1,9 +1,6 @@
 package pixel.aurora.compiler.tree
 
-import pixel.aurora.compiler.tree.other.AnnotationUsing
-import pixel.aurora.compiler.tree.other.Parameter
-import pixel.aurora.compiler.tree.other.TypeParameter
-import pixel.aurora.compiler.tree.other.VisibilityMode
+import pixel.aurora.compiler.tree.other.*
 
 interface Declaration : Node {
 
@@ -202,7 +199,14 @@ class SingletonObjectDeclaration(
 
 }
 
-abstract class ClassDeclaration : Declaration {
+abstract class ClassDeclaration(
+    private val name: Identifier,
+    private val implements: List<SimpleType>,
+    private val extends: ClassCall,
+    private val body: List<Declaration>,
+    private val annotations: List<AnnotationUsing>,
+    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
+) : Declaration {
 
     override fun getDeclarationName() = "ClassDeclaration"
     abstract fun getClassDeclarationName(): String
