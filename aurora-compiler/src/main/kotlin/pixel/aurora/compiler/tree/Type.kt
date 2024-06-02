@@ -26,7 +26,18 @@ open class SimpleType(
 
     object None : SimpleType("None")
     object Any : SimpleType("Any")
-    object Number : SimpleType("Number")
+
+    object Base {
+        object Number : SimpleType("Number")
+    }
+
+    object Interface {
+        object Tuple : SimpleType("Tuple")
+    }
+
+    object Annotation {
+        object Override : SimpleType("Override")
+    }
 
     override fun getTypeName() = "SimpleType"
 

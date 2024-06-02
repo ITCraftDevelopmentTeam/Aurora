@@ -93,7 +93,7 @@ class ExpressionParser : Parser<Expression>() {
 
     fun operatorGetPart(base: Expression) = parser {
         val index = include(ListParser(NamedArgumentParser() or ArgumentParser(), "[", "]"))
-        CallExpression(MemberExpression(base, Identifier("internal:operator/get")), index)
+        CallExpression(MemberExpression(base, Identifier("get")), index)
     }
 
     fun distinctCastingPart(base: Expression) = parser {

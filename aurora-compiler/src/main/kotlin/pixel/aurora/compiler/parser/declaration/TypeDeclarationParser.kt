@@ -7,7 +7,6 @@ import pixel.aurora.compiler.parser.other.VisibilityModeParser
 import pixel.aurora.compiler.parser.util.ListParser
 import pixel.aurora.compiler.tree.*
 import pixel.aurora.compiler.tree.other.Argument
-import pixel.aurora.compiler.tree.other.Parameter
 import pixel.aurora.compiler.tree.other.TypeParameter
 import pixel.aurora.compiler.tree.other.VisibilityMode
 
@@ -20,27 +19,27 @@ class TypeDeclarationParser : Parser<Declaration>() {
 
     fun tupleTypeAlias(name: Identifier, typeParameters: List<TypeParameter>, visibilityMode: VisibilityMode) = parser {
         val tuple = include(ListParser(TypeParser()))
-        val getMember = MemberExpression(ThisExpression(), Identifier("internal:operator/get"))
+        val getMember = MemberExpression(ThisExpression(), Identifier("get"))
         val methods = tuple.mapIndexed { index, item ->
             ExpressionFunctionDeclaration(
-                Identifier("component$index"), emptyList(), emptyList(), item, CallExpression(
-                    getMember, listOf(
-                        Argument(NumberLiteral(index.toBigDecimal()))
-                    ), emptyList()
-                ), VisibilityMode.PUBLIC, emptyList()
+                Identifier("component$index"),
+                emptyList(), emptyList(), item,
+                AsExpression(
+                    CallExpression(
+                        getMember,
+                        listOf(
+                            Argument(NumberLiteral(index.toBigDecimal()))
+                        ),
+                        emptyList()
+                    ),
+                    item,
+                    false
+                ),
+                VisibilityMode.PUBLIC,
+                emptyList()
             )
         }
-        val body = mutableListOf<Declaration>()
-        body += methods
-        body += EmptyFunctionDeclaration(
-            Identifier("internal:operator/get"),
-            emptyList(),
-            listOf(Parameter(Identifier("index"), SimpleType.Number)),
-            SimpleType.Any,
-            VisibilityMode.PUBLIC,
-            emptyList()
-        )
-        val interfaceDeclaration = InterfaceDeclaration(name, typeParameters, emptyList(), body, visibilityMode)
+        val interfaceDeclaration = InterfaceDeclaration(name, typeParameters, listOf(SimpleType.Interface.Tuple), methods, visibilityMode)
         return@parser interfaceDeclaration
     }
 
