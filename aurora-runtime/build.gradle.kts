@@ -5,6 +5,13 @@ plugins {
 
 dependencies {
     api(project(":aurora-common"))
+    api(project(":aurora-compiler"))
+
+
+}
+
+dependencies {
+    testApi(kotlin("test"))
 }
 
 configure<PublishingExtension> {
@@ -12,3 +19,8 @@ configure<PublishingExtension> {
         from(components.getByName("kotlin"))
     }
 }
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
