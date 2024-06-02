@@ -1,17 +1,20 @@
 package pixel.aurora.compiler.parser.other
 
-import pixel.aurora.compiler.parser.ExpressionParser
-import pixel.aurora.compiler.parser.Parser
-import pixel.aurora.compiler.parser.buffer
+import pixel.aurora.compiler.parser.*
 import pixel.aurora.compiler.parser.expression.IdentifierParser
-import pixel.aurora.compiler.parser.include
 import pixel.aurora.compiler.tree.other.Argument
 import pixel.aurora.compiler.tree.other.NamedArgument
 
 class ArgumentParser : Parser<Argument>() {
 
     override fun parse(): Argument {
-        return Argument(include(ExpressionParser()))
+        val isRest = include(
+            parser {
+                buffer.get().expectPunctuation('*')
+            }.optional()
+        ).getOrNull() != null
+        val expression = include(ExpressionParser())
+        return Argument(expression, isRest)
     }
 
 }

@@ -32,6 +32,7 @@ class ParserTests {
                             else if (input == 1) println("Input: 2");
                             else if (input == 2) println("Input: 3");
                             else println("Input: " + (input + 1));
+                            i"internal/function"(*listOf(input, print));
                         }
                         
                         const anObject = object;
@@ -72,7 +73,7 @@ class ParserTests {
                             return object as T;
                         }
                         
-                        function i"internal/function"(args: Array<String?>, mapper: ((origin: String) -> String) = { return it; }) {
+                        function i"internal/function"(*args: String?, mapper: ((origin: String) -> String) = { return it; }) {
                             println(cast<String>(object = APPLICATION_NAME));
                             function innerFunction() = this@i"internal/function"::class;
                             

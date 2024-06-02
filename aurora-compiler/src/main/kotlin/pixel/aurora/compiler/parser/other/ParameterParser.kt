@@ -7,6 +7,11 @@ import pixel.aurora.compiler.tree.other.Parameter
 class ParameterParser : Parser<Parameter>() {
 
     override fun parse(): Parameter {
+        val isRest = include(
+            parser {
+                buffer.get().expectPunctuation('*')
+            }.optional()
+        ).getOrNull() != null
         val name = include(IdentifierParser())
         buffer.get().expectPunctuation(':')
         val type = include(TypeParser())
@@ -16,7 +21,7 @@ class ParameterParser : Parser<Parameter>() {
                 include(ExpressionParser())
             }.optional()
         )
-        return Parameter(name, type, default.getOrNull())
+        return Parameter(name, type, default.getOrNull(), isRest)
     }
 
 }

@@ -5,7 +5,7 @@ import pixel.aurora.compiler.tree.Identifier
 import pixel.aurora.compiler.tree.Node
 import pixel.aurora.compiler.tree.Type
 
-class Parameter(private val name: Identifier, private val type: Type, private val default: Expression? = null) : Node {
+class Parameter(private val name: Identifier, private val type: Type, private val default: Expression? = null, private val isRest: Boolean = false) : Node {
 
     override fun getNodeName() = "Parameter"
 
@@ -17,5 +17,8 @@ class Parameter(private val name: Identifier, private val type: Type, private va
 
     @Node.Property
     fun getDefault() = default
+
+    @Node.Property
+    fun isRest() = isRest
 
 }
