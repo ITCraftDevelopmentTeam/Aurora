@@ -26,6 +26,14 @@ class ParserTests {
                         import pixel.aurora.lang.Tuple;
                         import pixel.aurora.util.*;
                         
+                        const function main(input: Int, print: Boolean = false) {
+                            println(content = input if (print) else null);
+                            if (input == 0) println("Input: 1");
+                            else if (input == 1) println("Input: 2");
+                            else if (input == 2) println("Input: 3");
+                            else println("Input: " + (input + 1));
+                        }
+                        
                         const anObject = object;
                         
                         type Tuple2 = (Holder<Tuple3>,);
@@ -66,7 +74,6 @@ class ParserTests {
                         
                         function i"internal/function"(args: Array<String?>, mapper: ((origin: String) -> String) = { return it; }) {
                             println(cast<String>(object = APPLICATION_NAME));
-                            
                             function innerFunction() = this@i"internal/function"::class;
                             
                             result := runCatching @[LambdaExpression] {

@@ -87,8 +87,18 @@ class ExpressionParser : Parser<Expression>() {
                 base
             ) or AssignmentExpressionParser(base) or BinaryExpressionParser(base) or UpdateExpressionParser(base) or asExpressionPart(
                 base
-            ) or isExpressionPart(base) or operatorGetPart(base)
+            ) or isExpressionPart(base) or operatorGetPart(base) or conditionalPart(base)
         )
+    }
+
+    fun conditionalPart(consequent: Expression) = parser {
+        buffer.get().expectIdentifier("if")
+        buffer.get().expectPunctuation('(')
+        val test = include(ExpressionParser())
+        buffer.get().expectPunctuation(')')
+        buffer.get().expectIdentifier("else")
+        val alternate = include(ExpressionParser())
+        ConditionalExpression(test, consequent, alternate)
     }
 
     fun operatorGetPart(base: Expression) = parser {

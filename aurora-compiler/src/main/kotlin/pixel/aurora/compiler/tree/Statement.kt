@@ -8,6 +8,15 @@ interface Statement : Node {
 
 }
 
+class BlockStatement(private val body: List<Statement>) : Statement {
+
+    @Node.Property
+    fun getBody() = body
+
+    override fun getStatementName() = "BlockStatement"
+
+}
+
 class ExpressionStatement(private val expression: Expression) : Statement {
 
     override fun getStatementName() = "ExpressionStatement"
@@ -38,5 +47,20 @@ class InnerDeclarationStatement(private val declaration: Declaration) : Statemen
 
     @Node.Property
     fun getDeclaration() = declaration
+
+}
+
+class IfStatement(private val test: Expression, private val consequent: Statement, private val alternate: Statement?) : Statement {
+
+    override fun getStatementName() = "IfStatement"
+
+    @Node.Property
+    fun getTest() = test
+
+    @Node.Property
+    fun getConsequent() = consequent
+
+    @Node.Property
+    fun getAlternate() = alternate
 
 }

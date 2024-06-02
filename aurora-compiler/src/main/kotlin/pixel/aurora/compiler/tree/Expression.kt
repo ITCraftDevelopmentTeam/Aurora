@@ -265,3 +265,18 @@ class ObjectExpression(
     fun getObjectAnnotations() = annotations
 
 }
+
+class ConditionalExpression(private val test: Expression, private val consequent: Expression, private val alternate: Expression) : Expression {
+
+    override fun getExpressionName() = "ConditionalExpression"
+
+    @Node.Property
+    fun getTest() = test
+
+    @Node.Property
+    fun getConsequent() = consequent
+
+    @Node.Property
+    fun getAlternate() = alternate
+
+}
