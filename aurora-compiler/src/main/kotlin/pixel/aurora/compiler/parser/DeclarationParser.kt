@@ -14,7 +14,7 @@ class CommonDeclarationParser : Parser<Declaration>() {
 class TopLevelDeclarationParser : Parser<Declaration>() {
 
     fun choices() =
-        CommonDeclarationParser() or SingletonObjectDeclarationParser() or InterfaceDeclarationParser() or TypeDeclarationParser()
+        CommonDeclarationParser() or ClassDeclarationParser() or SingletonObjectDeclarationParser() or InterfaceDeclarationParser() or TypeDeclarationParser()
 
     override fun parse(): Declaration {
         return include(choices())

@@ -19,8 +19,13 @@ abstract class FunctionDeclaration(
     private val parameters: List<Parameter>,
     private val returnType: Type,
     private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
-    private val annotations: List<AnnotationUsing> = emptyList()
+    private val annotations: List<AnnotationUsing> = emptyList(),
+    private val mode: Mode? = null
 ) : Declaration {
+
+    enum class Mode {
+        OPEN, CONST, ABSTRACT;
+    }
 
     override fun getDeclarationName() = "FunctionDeclaration"
     abstract fun getFunctionDeclarationName(): String
@@ -43,6 +48,9 @@ abstract class FunctionDeclaration(
     @Node.Property
     fun getFunctionAnnotations() = annotations
 
+    @Node.Property
+    fun getFunctionMode() = mode
+
 }
 
 class EmptyFunctionDeclaration(
@@ -51,8 +59,9 @@ class EmptyFunctionDeclaration(
     parameters: List<Parameter>,
     returnType: Type,
     visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
-    annotations: List<AnnotationUsing>
-) : FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations) {
+    annotations: List<AnnotationUsing>,
+    mode: Mode? = null
+) : FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations, mode) {
 
     override fun getFunctionDeclarationName() = "EmptyFunctionDeclaration"
 
@@ -65,8 +74,9 @@ class BlockFunctionDeclaration(
     returnType: Type,
     private val body: List<Statement>,
     visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
-    annotations: List<AnnotationUsing>
-) : FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations) {
+    annotations: List<AnnotationUsing>,
+    mode: Mode? = null
+) : FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations, mode) {
 
     override fun getFunctionDeclarationName() = "BlockFunctionDeclaration"
 
@@ -82,9 +92,10 @@ class ExpressionFunctionDeclaration(
     returnType: Type,
     private val expression: Expression,
     visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
-    annotations: List<AnnotationUsing>
+    annotations: List<AnnotationUsing>,
+    mode: Mode? = null
 ) :
-    FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations) {
+    FunctionDeclaration(name, typeParameters, parameters, returnType, visibilityMode, annotations, mode) {
 
     override fun getFunctionDeclarationName() = "ExpressionFunctionDeclaration"
 
@@ -99,7 +110,7 @@ class VariableDeclaration(
     private val type: Type? = null,
     private val init: Expression? = null,
     private val visibilityMode: VisibilityMode = VisibilityMode.INTERNAL,
-    private val annotations: List<AnnotationUsing>
+    private val annotations: List<AnnotationUsing>,
 ) : Declaration {
 
     override fun getDeclarationName() = "VariableDeclaration"
@@ -199,16 +210,43 @@ class SingletonObjectDeclaration(
 
 }
 
-abstract class ClassDeclaration(
+open class ClassDeclaration(
     private val name: Identifier,
     private val implements: List<SimpleType>,
     private val extends: ClassCall,
     private val body: List<Declaration>,
     private val annotations: List<AnnotationUsing>,
-    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
+    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
+    private val typeParameters: List<TypeParameter>,
+    private val mode: Mode,
 ) : Declaration {
 
+    enum class Mode {
+        OPEN, CONST, ABSTRACT, ENUM, ANNOTATION, DATA;
+    }
+
+    @Node.Property
+    fun getClassName() = name
+
+    @Node.Property
+    fun getClassImplements() = implements
+
+    @Node.Property
+    fun getClassExtends() = extends
+
+    @Node.Property
+    fun getClassBody() = body
+
+    @Node.Property
+    fun getClassAnnotations() = annotations
+
+    @Node.Property
+    fun getClassVisibilityMode() = visibilityMode
+
+    @Node.Property
+    fun getClassMode() = mode
+
     override fun getDeclarationName() = "ClassDeclaration"
-    abstract fun getClassDeclarationName(): String
+    open fun getClassDeclarationName(): String = "SimpleClassDeclaration"
 
 }

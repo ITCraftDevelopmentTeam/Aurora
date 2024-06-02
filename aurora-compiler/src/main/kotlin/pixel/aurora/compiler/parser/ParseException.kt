@@ -18,4 +18,8 @@ class TokenizerException(
     BaseParseException(message, uri, cause = cause)
 
 class ParserException(message: String?, val buffer: TokenBuffer, val state: Parser.State, cause: Throwable? = null) :
-    BaseParseException(message, state.uri, cause = cause)
+    BaseParseException(message, state.uri, cause = cause) {
+
+    private val tokens = buffer.tokens()
+
+}

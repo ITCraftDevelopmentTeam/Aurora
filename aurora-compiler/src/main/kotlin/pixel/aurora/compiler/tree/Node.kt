@@ -27,7 +27,7 @@ class NodeSerializer : JsonSerializer<Node>() {
     override fun serialize(node: Node, generator: JsonGenerator, provider: SerializerProvider) {
         val type = node::class
         val result = mutableMapOf<String, Any?>()
-        result += "class" to type.jvmName
+        result += "nodeType" to type.jvmName
         for (member in type.memberFunctions) {
             val annotation = member.findAnnotation<Node.Property>() ?: continue
             if (member.parameters.filterNot(KParameter::isOptional).size > 1) continue

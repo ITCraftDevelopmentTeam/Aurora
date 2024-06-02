@@ -1,6 +1,7 @@
 package pixel.aurora.compiler.parser.declaration
 
-import pixel.aurora.compiler.parser.*
+import pixel.aurora.compiler.parser.Parser
+import pixel.aurora.compiler.parser.buffer
 import pixel.aurora.compiler.tokenizer.Token
 import pixel.aurora.compiler.tokenizer.TokenType
 import pixel.aurora.compiler.tokenizer.isToken
@@ -19,8 +20,7 @@ class ImportDeclarationParser : Parser<Program.ImportDeclaration>() {
             else if (last.isToken(".", TokenType.PUNCTUATION) && current.isToken("*", TokenType.PUNCTUATION)) {
                 importAll = true
                 break
-            }
-            else if (current.isToken(".", TokenType.PUNCTUATION) && last.isToken(type = TokenType.IDENTIFIER)) "."
+            } else if (current.isToken(".", TokenType.PUNCTUATION) && last.isToken(type = TokenType.IDENTIFIER)) "."
             else if (current.isToken(type = TokenType.IDENTIFIER)) current.getRaw()
             else throw makeError("Invalid syntax")
             last = current

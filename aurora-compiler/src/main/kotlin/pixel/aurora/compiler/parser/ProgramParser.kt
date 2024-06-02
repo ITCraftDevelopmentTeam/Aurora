@@ -14,7 +14,8 @@ class ProgramParser : Parser<Program>() {
     override fun parse(): Program {
         val annotations = include(TopLevelAnnotationUsingDeclarationParser().optional()).getOrElse { emptyList() }
         val packageDeclaration = include(PackageDeclarationParser())
-        val importDeclarations = include(ListParser(ImportDeclarationParser(), null, null, null).optional()).getOrElse { emptyList() }
+        val importDeclarations =
+            include(ListParser(ImportDeclarationParser(), null, null, null).optional()).getOrElse { emptyList() }
         val declarations = mutableListOf<Declaration>()
         while (buffer.hasNext()) {
             declarations += include(choose(EmptyDeclarationParser(), TopLevelDeclarationParser()))

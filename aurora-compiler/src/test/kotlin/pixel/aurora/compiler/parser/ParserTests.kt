@@ -23,8 +23,13 @@ class ParserTests {
                         @[file:Program];
                         package pixel.aurora;
                         
-                        import pixel.aurora.lang.Singleton;
-                        import pixel.aurora.util.*; 
+                        import pixel.aurora.lang.Tuple;
+                        import pixel.aurora.util.*;
+                        
+                        const anObject = object;
+                        
+                        type Tuple2 = (Holder<Tuple3>,);
+                        type Tuple3 = ((tuple: Tuple2): Any -> None);
                         
                         @[VariableDeclaration]
                         const APPLICATION_NAME: String = "Aurora";
@@ -37,13 +42,21 @@ class ParserTests {
                             const type = "Declaration";
                         }
                         
+                        public abstract class AbstractPrintStream : OutputStream() {
+                        
+                            abstract function print(character: Character);
+                            open function print(string: String) = string.forEach(::print);
+                            const function println(string: String) = print(string + "\n");
+                        
+                        }
+                        
                         public interface A<R> : B, C, D, E {
-                            type Alias<R> = (A<R>, B, C, D, E);
+                            type Tuple1<R> = (A<R>, B, C, D, E);
                             interface B
                             interface C
                             interface D
                             interface E
-                            function run(): R
+                            function run(): R;
                         }
                         
                         @[BlockFunctionDeclaration<T>, any:Unsafe()]

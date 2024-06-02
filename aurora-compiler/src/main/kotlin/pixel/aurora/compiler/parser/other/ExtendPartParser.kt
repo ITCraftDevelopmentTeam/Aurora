@@ -24,6 +24,7 @@ class ExtendPartParser : Parser<Pair<ClassCall, List<SimpleType>>>() {
                 null
             ).optional()
         ).getOrElse { emptyList() }
+        if (extends == null && implements.isEmpty()) throw makeError("Invalid syntax")
         return (extends ?: ClassCall(SimpleType.Any, emptyList())) to implements
     }
 

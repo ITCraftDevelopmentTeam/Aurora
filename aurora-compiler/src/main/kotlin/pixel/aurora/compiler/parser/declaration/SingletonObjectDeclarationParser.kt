@@ -7,7 +7,9 @@ import pixel.aurora.compiler.parser.other.ExtendPartParser
 import pixel.aurora.compiler.parser.other.VisibilityModeParser
 import pixel.aurora.compiler.parser.util.ListParser
 import pixel.aurora.compiler.tree.ObjectExpression
+import pixel.aurora.compiler.tree.SimpleType
 import pixel.aurora.compiler.tree.SingletonObjectDeclaration
+import pixel.aurora.compiler.tree.other.ClassCall
 import pixel.aurora.compiler.tree.other.VisibilityMode
 
 class SingletonObjectDeclarationParser : Parser<SingletonObjectDeclaration>() {
@@ -17,9 +19,14 @@ class SingletonObjectDeclarationParser : Parser<SingletonObjectDeclaration>() {
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
         buffer.get().expectIdentifier("object")
         val name = include(IdentifierParser())
-        val extends = include(ExtendPartParser())
+        val extends = include(ExtendPartParser().optional()).getOrNull()
         val body = include(ListParser(TopLevelDeclarationParser(), "{", "}", null).optional()).getOrElse { emptyList() }
-        val expression = ObjectExpression(extends.second, extends.first, body, annotations)
+        val expression = ObjectExpression(
+            extends?.second ?: emptyList(),
+            extends?.first ?: ClassCall(SimpleType.Any, emptyList()),
+            body,
+            annotations
+        )
         return SingletonObjectDeclaration(name, expression, visibilityMode)
     }
 

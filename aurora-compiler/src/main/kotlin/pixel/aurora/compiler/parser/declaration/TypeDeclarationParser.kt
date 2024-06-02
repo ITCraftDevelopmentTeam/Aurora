@@ -18,7 +18,7 @@ class TypeDeclarationParser : Parser<Declaration>() {
         }
 
     fun tupleTypeAlias(name: Identifier, typeParameters: List<TypeParameter>, visibilityMode: VisibilityMode) = parser {
-        val tuple = include(ListParser(TypeParser()))
+        val tuple = include(ListParser(TypeParser(), allowSeparatorEnd = true))
         val getMember = MemberExpression(ThisExpression(), Identifier("get"))
         val methods = tuple.mapIndexed { index, item ->
             ExpressionFunctionDeclaration(
@@ -39,7 +39,8 @@ class TypeDeclarationParser : Parser<Declaration>() {
                 emptyList()
             )
         }
-        val interfaceDeclaration = InterfaceDeclaration(name, typeParameters, listOf(SimpleType.Interface.Tuple), methods, visibilityMode)
+        val interfaceDeclaration =
+            InterfaceDeclaration(name, typeParameters, listOf(SimpleType.Interface.Tuple), methods, visibilityMode)
         return@parser interfaceDeclaration
     }
 
@@ -50,11 +51,11 @@ class TypeDeclarationParser : Parser<Declaration>() {
         val typeParameters = include(ListParser(TypeParameterParser(), "<", ">").optional()).getOrElse { emptyList() }
         buffer.get().expectPunctuation('=')
         val result = include(
-            tupleTypeAlias(name, typeParameters, visibilityMode) or simpleTypeAlias(
+            simpleTypeAlias(
                 name,
                 typeParameters,
                 visibilityMode
-            )
+            ) or tupleTypeAlias(name, typeParameters, visibilityMode)
         )
         buffer.get().expectPunctuation(';')
         return result

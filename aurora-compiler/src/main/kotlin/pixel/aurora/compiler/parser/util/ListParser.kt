@@ -6,7 +6,8 @@ class ListParser<T : Any>(
     val element: Parser<T>,
     val prefix: String? = "(",
     val suffix: String? = ")",
-    val separator: String? = ","
+    val separator: String? = ",",
+    val allowSeparatorEnd: Boolean = false
 ) : Parser<List<T>>() {
 
     fun part() = parser {
@@ -29,6 +30,13 @@ class ListParser<T : Any>(
                 if (result == null) break
                 else arguments += result
             }
+        }
+        if (allowSeparatorEnd && separator != null) {
+            include(
+                parser {
+                    for (character in separator) buffer.get().expectPunctuation(character)
+                }.optional()
+            )
         }
         if (suffix != null) {
             for (character in suffix) buffer.get().expectPunctuation(character)

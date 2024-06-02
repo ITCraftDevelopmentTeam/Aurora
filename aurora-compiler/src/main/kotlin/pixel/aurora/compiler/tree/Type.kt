@@ -24,19 +24,19 @@ open class SimpleType(
     private val typeArguments: List<Type> = emptyList()
 ) : Type {
 
-    object None : SimpleType("None")
-    object Any : SimpleType("Any")
+    object None : SimpleType("pixel.aurora.lang.None")
+    object Any : SimpleType("pixel.aurora.lang.Any")
 
     object Base {
-        object Number : SimpleType("Number")
+        object Number : SimpleType("pixel.aurora.lang.Number")
     }
 
     object Interface {
-        object Tuple : SimpleType("Tuple")
+        object Tuple : SimpleType("pixel.aurora.lang.Tuple")
     }
 
     object Annotation {
-        object Override : SimpleType("Override")
+        object Override : SimpleType("pixel.aurora.annotation.Override")
     }
 
     override fun getTypeName() = "SimpleType"
