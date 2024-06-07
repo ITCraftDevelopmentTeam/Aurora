@@ -40,7 +40,7 @@ class TypeDeclarationParser : Parser<Declaration>() {
             )
         }
         val interfaceDeclaration =
-            InterfaceDeclaration(name, typeParameters, listOf(SimpleType.Interface.Tuple), methods, visibilityMode)
+            InterfaceDeclaration(name, typeParameters, listOf(SimpleType.Interface.Tuple), methods, visibilityMode, emptyList())
         return@parser interfaceDeclaration
     }
 

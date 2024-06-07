@@ -11,7 +11,7 @@ import pixel.aurora.compiler.tree.other.ClassCall
 class ObjectExpressionParser : Parser<ObjectExpression>() {
 
     override fun parse(): ObjectExpression {
-        val annotations = include(AnnotationUsingParser.AnnotationUsingListParser.optional()).getOrElse { emptyList() }
+        val annotations = include(ListParser(AnnotationUsingParser(), "@[", "]", ",").optional()).getOrElse { emptyList() }
         buffer.get().expectIdentifier("object")
         val extends = include(ExtendPartParser().optional()).getOrNull()
         val body = include(ListParser(TopLevelDeclarationParser(), "{", "}", null).optional()).getOrElse { emptyList() }

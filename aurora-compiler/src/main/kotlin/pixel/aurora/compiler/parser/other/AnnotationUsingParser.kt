@@ -7,15 +7,6 @@ import pixel.aurora.compiler.parser.util.ListParser
 import pixel.aurora.compiler.tree.other.AnnotationUsing
 
 class AnnotationUsingParser : Parser<AnnotationUsing>() {
-
-    object AnnotationUsingListParser : Parser<List<AnnotationUsing>>() {
-
-        override fun parse(): List<AnnotationUsing> {
-            return include(ListParser(AnnotationUsingParser(), "@[", "]"))
-        }
-
-    }
-
     fun targetPart() = parser {
         val name = include(IdentifierParser()).getIdentifierName()
         buffer.get().expectPunctuation(':')

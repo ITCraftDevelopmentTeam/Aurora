@@ -7,28 +7,24 @@ import pixel.aurora.compiler.parser.other.TypeParameterParser
 import pixel.aurora.compiler.parser.other.VisibilityModeParser
 import pixel.aurora.compiler.parser.type.SimpleTypeParser
 import pixel.aurora.compiler.parser.util.ListParser
-import pixel.aurora.compiler.tree.InterfaceDeclaration
-import pixel.aurora.compiler.tree.VariableDeclaration
+import pixel.aurora.compiler.tree.FunctionDeclaration
+import pixel.aurora.compiler.tree.StructureDeclaration
 import pixel.aurora.compiler.tree.other.VisibilityMode
 
-class InterfaceDeclarationParser : Parser<InterfaceDeclaration>() {
+class StructureDeclarationParser : Parser<StructureDeclaration>() {
 
-    override fun parse(): InterfaceDeclaration {
+    override fun parse(): StructureDeclaration {
         val annotations = include(ListParser(AnnotationUsingParser(), "@[", "]", ",").optional()).getOrElse { emptyList() }
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
-        buffer.get().expectIdentifier("interface")
+        buffer.get().expectIdentifier("struct")
         val name = include(IdentifierParser())
         val typeParameters = include(ListParser(TypeParameterParser(), "<", ">").optional()).getOrElse { emptyList() }
-        val implements = include(implementsPart().optional()).getOrElse { emptyList() }
+        val extends = include(ListParser(SimpleTypeParser(), ":", null).optional()).getOrElse { emptyList() }
         val body = include(ListParser(TopLevelDeclarationParser(), "{", "}", null).optional()).getOrElse { emptyList() }
         for (declaration in body) {
-            if (declaration is VariableDeclaration) throw makeError()
+            if (declaration is FunctionDeclaration) throw makeError("Unexpected function declaration")
         }
-        return InterfaceDeclaration(name, typeParameters, implements, body, visibilityMode, annotations)
-    }
-
-    fun implementsPart() = parser {
-        include(ListParser(SimpleTypeParser(), ":", null))
+        return StructureDeclaration(name, annotations, extends, typeParameters, body, visibilityMode)
     }
 
 }

@@ -144,9 +144,12 @@ open class InterfaceDeclaration(
     private val typeParameters: List<TypeParameter>,
     private val implements: List<SimpleType>,
     private val body: List<Declaration>,
-    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC
-) :
-    Declaration {
+    private val visibilityMode: VisibilityMode = VisibilityMode.PUBLIC,
+    private val annotations: List<AnnotationUsing>
+) : Declaration {
+
+    @Node.Property
+    fun getInterfaceAnnotations() = annotations
 
     @Node.Property
     fun getInterfaceName() = name
@@ -158,7 +161,7 @@ open class InterfaceDeclaration(
     fun getInterfaceImplementations() = implements
 
     @Node.Property
-    fun getBody(): List<Declaration> = body
+    fun getInterfaceBody(): List<Declaration> = body
 
     @Node.Property
     fun getInterfaceVisibilityMode() = visibilityMode
@@ -248,5 +251,29 @@ open class ClassDeclaration(
 
     override fun getDeclarationName() = "ClassDeclaration"
     open fun getClassDeclarationName(): String = "SimpleClassDeclaration"
+
+}
+
+open class StructureDeclaration(private val name: Identifier, private val annotations: List<AnnotationUsing>, private val extends: List<SimpleType>, private val typeParameters: List<TypeParameter>, private val body: List<Declaration>, private val visibilityMode: VisibilityMode) : Declaration {
+
+    override fun getDeclarationName() = "StructureDeclaration"
+
+    @Node.Property
+    fun getStructureAnnotations() = annotations
+
+    @Node.Property
+    fun getStructureName() = name
+
+    @Node.Property
+    fun getStructureExtends() = extends
+
+    @Node.Property
+    fun getStructureTypeParameters() = typeParameters
+
+    @Node.Property
+    fun getStructureBody() = body
+
+    @Node.Property
+    fun getStructureVisibilityMode() = visibilityMode
 
 }

@@ -37,12 +37,15 @@ abstract class Parser<T : Any> {
 }
 
 
-fun <R : Any> Parser<*>.include(parser: Parser<R>): R {
+fun <R : Any> Parser<*>.include(parser: Parser<R>): R = includeWithState(parser).second
+
+fun <R : Any> Parser<*>.includeWithState(parser: Parser<R>): Pair<Parser.State, R> {
     val origin = parser.getStateOrNull()
     parser.setState(this.getStateOrNull())
     val result = parser.parse()
+    val resultState = parser.getState()
     parser.setState(origin)
-    return result
+    return resultState to result
 }
 
 val Parser<*>.buffer: TokenBuffer
@@ -54,7 +57,8 @@ fun <R : Any> Parser<R>.optional(rollback: Boolean = true) = object : Parser<Res
         val parser = this@optional
         val position = buffer.position()
         try {
-            return Result.success(include(parser))
+            val result = Result.success(include(parser))
+            return result
         } catch (throwable: Throwable) {
             if (rollback) {
                 buffer.position(position)
@@ -78,13 +82,15 @@ infix fun <T : Any> ChoiceParser<T>.not(filter: (Parser<out T>) -> Boolean) =
 class ChoiceParser<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
 
     override fun parse(): T {
-        val exceptions = mutableListOf<Throwable>()
+        var exception: Throwable? = null
         for (choice in choices) {
-            val result = include(choice.optional())
-            if (result.isSuccess) return result.getOrNull() ?: throw makeError("Invalid syntax")
-            else exceptions += result.exceptionOrNull()!!
+            val result = includeWithState(choice.optional())
+            if (result.second.isSuccess) {
+                return result.second.getOrNull() ?: throw makeError("Invalid syntax")
+            }
+            else exception = result.second.exceptionOrNull()!!
         }
-        throw makeError("Invalid syntax", cause = exceptions.lastOrNull())
+        throw makeError("Invalid syntax", cause = exception)
     }
 
 }

@@ -15,7 +15,7 @@ import pixel.aurora.compiler.tree.other.VisibilityMode
 class SingletonObjectDeclarationParser : Parser<SingletonObjectDeclaration>() {
 
     override fun parse(): SingletonObjectDeclaration {
-        val annotations = include(AnnotationUsingParser.AnnotationUsingListParser.optional()).getOrElse { emptyList() }
+        val annotations = include(ListParser(AnnotationUsingParser(), "@[", "]", ",").optional()).getOrElse { emptyList() }
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
         buffer.get().expectIdentifier("object")
         val name = include(IdentifierParser())

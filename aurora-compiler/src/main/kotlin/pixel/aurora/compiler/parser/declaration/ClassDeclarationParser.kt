@@ -16,7 +16,7 @@ import pixel.aurora.compiler.tree.other.VisibilityMode
 class ClassDeclarationParser : Parser<ClassDeclaration>() {
 
     override fun parse(): ClassDeclaration {
-        val annotations = include(AnnotationUsingParser.AnnotationUsingListParser.optional()).getOrElse { emptyList() }
+        val annotations = include(ListParser(AnnotationUsingParser(), "@[", "]", ",").optional()).getOrElse { emptyList() }
         val visibilityMode = include(VisibilityModeParser().optional()).getOrElse { VisibilityMode.PUBLIC }
         val mode = include(
             parser {

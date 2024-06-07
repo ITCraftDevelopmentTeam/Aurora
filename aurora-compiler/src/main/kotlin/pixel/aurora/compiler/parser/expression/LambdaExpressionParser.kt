@@ -9,7 +9,7 @@ import pixel.aurora.compiler.tree.LambdaExpression
 class LambdaExpressionParser : Parser<LambdaExpression>() {
 
     override fun parse(): LambdaExpression {
-        val annotations = include(AnnotationUsingParser.AnnotationUsingListParser.optional()).getOrElse { emptyList() }
+        val annotations = include(ListParser(AnnotationUsingParser(), "@[", "]", ",").optional()).getOrElse { emptyList() }
         buffer.get().expectPunctuation('{')
         val parameters = include(
             parser {

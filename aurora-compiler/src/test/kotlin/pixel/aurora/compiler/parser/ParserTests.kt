@@ -26,6 +26,12 @@ class ParserTests {
                         import pixel.aurora.lang.Tuple;
                         import pixel.aurora.util.*;
                         
+                        struct StructA
+                        struct StructB : StructA {
+                            const constantValue: StructA;
+                            let mutableValue: StructB? = null;
+                        }
+                        
                         const function main(input: Int, print: Boolean = false) {
                             println(content = input if (print) else null);
                             if (input == 0) println("Input: 1");
