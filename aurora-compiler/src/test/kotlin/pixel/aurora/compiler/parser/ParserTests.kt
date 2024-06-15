@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test
 import pixel.aurora.compiler.AuroraCompiler
 import pixel.aurora.compiler.tokenizer.TokenBuffer
 import pixel.aurora.compiler.tokenizer.Tokenizer
+import pixel.aurora.compiler.validator.ProgramValidator
+import pixel.aurora.compiler.validator.Validator
 import java.nio.CharBuffer
 
 
@@ -101,6 +103,7 @@ class ParserTests {
         val parser = ProgramParser()
         parser.setState(Parser.State(AuroraCompiler.BLANK_URI, buffer))
         val program = parser.parse()
+        ProgramValidator().setState(Validator.State(parser.getState().uri)).validate(program)
         println(
             jacksonObjectMapper()
                 .writerWithDefaultPrettyPrinter()

@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.jvmName
@@ -38,9 +36,7 @@ class NodeSerializer : JsonSerializer<Node>() {
                     member.name.removePrefix("is").replaceFirstChar { it.lowercase() }
                 } else continue
             val self = member.parameters.first { it.name == null }
-            val value = runBlocking {
-                member.callSuspendBy(mapOf(self to node))
-            }
+            val value = member.callBy(mapOf(self to node))
             result += name to value
         }
         if (result.isNotEmpty()) generator.writeObject(result)
