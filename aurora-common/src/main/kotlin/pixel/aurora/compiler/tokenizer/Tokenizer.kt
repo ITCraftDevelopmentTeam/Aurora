@@ -8,12 +8,17 @@ import pixel.aurora.compiler.parser.TokenizerException
 import java.net.URI
 import java.nio.CharBuffer
 
-class Tokenizer(private val buffer: CharBuffer, private val uri: URI = AuroraCompiler.BLANK_URI) {
+class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI, val punctuations: String = DEFAULT_PUNCTUATIONS) {
+
+    constructor(content: CharSequence, uri: URI = AuroraCompiler.BLANK_URI, punctuations: String = DEFAULT_PUNCTUATIONS) : this(CharBuffer.wrap(content), uri, punctuations)
+
+    companion object {
+
+        const val DEFAULT_PUNCTUATIONS = "+-*/<>,.;:?()[]{}!%|&=@"
+
+    }
 
     private val objectMapper = jacksonObjectMapper()
-
-    fun getBuffer() = buffer
-    fun getURI() = uri
 
     fun reset() = this.also {
         buffer.position(0)
@@ -50,7 +55,7 @@ class Tokenizer(private val buffer: CharBuffer, private val uri: URI = AuroraCom
             } else if (character.isJavaIdentifierStart()) yield(lexIdentifier())
             else if (character == '"') yield(lexString())
             else if (isNumeric()) yield(lexNumeric())
-            else if (character in TokenHelper.PUNCTUATIONS) yield(TokenType.PUNCTUATION.token(buffer.get().toString()))
+            else if (character in punctuations) yield(TokenType.PUNCTUATION.token(buffer.get().toString()))
             else throw makeError("Invalid syntax")
         }
     }

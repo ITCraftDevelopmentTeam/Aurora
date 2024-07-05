@@ -43,10 +43,4 @@ class NumericToken(raw: String, private val parsed: BigDecimal) : UnknownToken(T
 
 }
 
-object TokenHelper {
-
-    const val PUNCTUATIONS = "+-*/<>,.;:?()[]{}!%|&=@"
-
-}
-
 fun Token.isRaw(raw: String) = getRaw() == raw
