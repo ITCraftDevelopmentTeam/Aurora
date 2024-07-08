@@ -1,18 +1,17 @@
-package pixel.aurora.compiler.tokenizer
+package pixel.aurora.core.tokenizer
 
 import java.nio.BufferUnderflowException
-import java.util.*
 
-class TokenBuffer(private val tokenizer: Tokenizer) : Iterable<Token> {
+class TokenBuffer(private val tokens: List<Token>) : Iterable<Token> {
 
-    private val tokens: List<Token> = Collections.unmodifiableList(tokenizer.reset().tokenize().toList())
+    constructor(tokenizer: Tokenizer) : this(tokenizer.reset().tokenize().toList())
+
     private var position: Int = 0
 
     fun tokens() = tokens.slice(position until tokens.size)
 
     override fun iterator() = tokens.iterator()
 
-    fun getTokenizer() = tokenizer
     fun getTokens() = tokens
 
     fun get() = get(position++)
@@ -25,4 +24,8 @@ class TokenBuffer(private val tokenizer: Tokenizer) : Iterable<Token> {
     fun next(offset: Int) = position(position() + offset)
     fun hasNext() = position < tokens.size
 
+    override fun toString() = toList().toString()
+
 }
+
+fun Tokenizer.toTokenBuffer() = TokenBuffer(this)

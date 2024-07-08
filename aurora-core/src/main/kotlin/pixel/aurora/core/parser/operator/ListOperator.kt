@@ -1,8 +1,8 @@
-package pixel.aurora.compiler.parser.util
+package pixel.aurora.core.parser.operator
 
-import pixel.aurora.compiler.parser.*
+import pixel.aurora.core.parser.*
 
-class ListParser<T : Any>(
+class ListOperator<T : Any>(
     val element: Parser<T>,
     val prefix: String? = "(",
     val suffix: String? = ")",

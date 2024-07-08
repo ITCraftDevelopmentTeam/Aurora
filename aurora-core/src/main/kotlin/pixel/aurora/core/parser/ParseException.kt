@@ -1,9 +1,9 @@
 @file:Suppress("CanBeParameter")
 
-package pixel.aurora.compiler.parser
+package pixel.aurora.core.parser
 
-import pixel.aurora.compiler.tokenizer.TokenBuffer
-import pixel.aurora.compiler.tokenizer.Tokenizer
+import pixel.aurora.core.tokenizer.TokenBuffer
+import pixel.aurora.core.tokenizer.Tokenizer
 import java.net.URI
 import java.nio.CharBuffer
 

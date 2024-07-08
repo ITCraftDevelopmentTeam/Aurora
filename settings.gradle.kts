@@ -1,3 +1,3 @@
 rootProject.name = "aurora"
 
-include("aurora-common")
+include("aurora-core")

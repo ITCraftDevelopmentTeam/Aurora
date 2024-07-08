@@ -16,6 +16,7 @@ allprojects {
     tasks.withType<KotlinCompile> {
         kotlin {
             jvmToolchain(21)
+            compilerOptions.freeCompilerArgs.add("-Xcontext-receivers")
         }
     }
 

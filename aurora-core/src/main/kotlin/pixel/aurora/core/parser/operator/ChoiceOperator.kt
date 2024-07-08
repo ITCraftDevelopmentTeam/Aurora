@@ -1,8 +1,8 @@
-package pixel.aurora.compiler.parser.operator
+package pixel.aurora.core.parser.operator
 
-import pixel.aurora.compiler.parser.Parser
-import pixel.aurora.compiler.parser.includeWithState
-import pixel.aurora.compiler.parser.optional
+import pixel.aurora.core.parser.Parser
+import pixel.aurora.core.parser.includeWithState
+import pixel.aurora.core.parser.optional
 
 class ChoiceOperator<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
 

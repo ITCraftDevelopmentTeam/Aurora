@@ -1,16 +1,15 @@
-package pixel.aurora.compiler.tokenizer
+package pixel.aurora.core.tokenizer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import pixel.aurora.compiler.AuroraCompiler
-import pixel.aurora.compiler.parser.BaseParseException
-import pixel.aurora.compiler.parser.TokenizerException
+import pixel.aurora.core.Aurora
+import pixel.aurora.core.parser.BaseParseException
 import java.net.URI
 import java.nio.CharBuffer
 
-class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI, val punctuations: String = DEFAULT_PUNCTUATIONS) {
+class DefaultTokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.BLANK_URI, var punctuations: String = DEFAULT_PUNCTUATIONS) : Tokenizer {
 
-    constructor(content: CharSequence, uri: URI = AuroraCompiler.BLANK_URI, punctuations: String = DEFAULT_PUNCTUATIONS) : this(CharBuffer.wrap(content), uri, punctuations)
+    constructor(content: CharSequence, uri: URI = Aurora.BLANK_URI, punctuations: String = DEFAULT_PUNCTUATIONS) : this(CharBuffer.wrap(content), uri, punctuations)
 
     companion object {
 
@@ -20,11 +19,8 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
 
     private val objectMapper = jacksonObjectMapper()
 
-    fun reset() = this.also {
-        buffer.position(0)
-    }
-
-    fun makeError(message: String) = TokenizerException(message, buffer, uri, this)
+    override fun getBuffer() = buffer
+    override fun getUri() = uri
 
     fun lexBlockComment() {
         buffer.position(buffer.position() + 2)
@@ -36,7 +32,7 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
         }
     }
 
-    fun tokenize(): Sequence<Token> = sequence {
+    override fun tokenize(): Sequence<Token> = sequence {
         while (true) {
             if (buffer.isEmpty()) break
             val character = buffer.get()
@@ -47,7 +43,8 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
                 continue
             } else if (character.lowercaseChar() == 'i' && buffer.get(buffer.position() + 1) == '"') {
                 buffer.get()
-                yield(TokenType.IDENTIFIER.token((lexString() as StringToken).getString()))
+                val string = lexString()
+                yield(IdentifierToken(raw = string.getRaw(), parsed = string.getString(), isStringify = true))
             } else if (character.lowercaseChar() == 'r' && buffer.get(buffer.position() + 1) == '"') {
                 buffer.get()
                 val raw = lexString().getRaw()
@@ -55,7 +52,7 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
             } else if (character.isJavaIdentifierStart()) yield(lexIdentifier())
             else if (character == '"') yield(lexString())
             else if (isNumeric()) yield(lexNumeric())
-            else if (character in punctuations) yield(TokenType.PUNCTUATION.token(buffer.get().toString()))
+            else if (character in punctuations) yield(PunctuationToken(buffer.get()))
             else throw makeError("Invalid syntax")
         }
     }
@@ -160,7 +157,7 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
         return false
     }
 
-    fun lexString(): Token = runCatching {
+    fun lexString() = runCatching {
         var raw = buffer.get().toString()
         while (buffer.get(buffer.position()) != '"') {
             if (buffer.get(buffer.position()) == '\\') {
@@ -191,13 +188,12 @@ class Tokenizer(val buffer: CharBuffer, val uri: URI = AuroraCompiler.BLANK_URI,
                     break
                 }
             }
-        } catch (_: Throwable) {
-        }
+        } catch (_: Throwable) { }
         return when (identifier) {
-            "null" -> TokenType.NULL
-            "true", "false" -> TokenType.BOOLEAN
-            else -> TokenType.IDENTIFIER
-        }.token(identifier)
+            "null" -> NullToken()
+            "true", "false" -> BooleanToken(identifier)
+            else -> IdentifierToken(identifier, identifier)
+        }
     }
 
 }
