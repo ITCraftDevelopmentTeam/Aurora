@@ -43,7 +43,7 @@ class ParserTests {
 
     @Test
     fun test(): Unit = assertDoesNotThrow {
-        val tokens = tokenize().also(::println)
+        val tokens = tokenize()
         val parser = SimpleParser()
         tokens.parse(parser)
     }
