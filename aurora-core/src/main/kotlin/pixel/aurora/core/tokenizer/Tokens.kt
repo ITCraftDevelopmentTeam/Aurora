@@ -8,7 +8,7 @@ import pixel.aurora.core.parser.util.RawIdentifierParser
 context(Parser<*>)
 inline fun <reified T> Token.expect() = this.also {
     if (!T::class.isInstance(this))
-        throw makeError("Expected token: ${this::class}, bot got ${T::class}")
+        throw makeError("Expected token: ${T::class}, bot got ${this::class}")
 } as T
 
 context(Parser<*>)
@@ -26,7 +26,13 @@ context(Parser<*>)
 inline fun <reified T> token() = buffer.get().expect<T>()
 
 context(Parser<*>)
+fun numeric() = buffer.get().expect<NumericToken>()
+
+context(Parser<*>)
 fun identifier(name: String? = null) = include(RawIdentifierParser(name))
 
 context(Parser<*>)
 fun punctuation(punctuations: String) = punctuations.map { buffer.get().expectPunctuation(it) }
+
+context(Parser<*>)
+fun boolean() = buffer.get().expect<BooleanToken>()

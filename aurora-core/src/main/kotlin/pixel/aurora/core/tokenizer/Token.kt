@@ -43,6 +43,10 @@ class BooleanToken(raw: String, private val parsed: Boolean = raw == "true") : U
 
     fun getBoolean(): Boolean = parsed
 
+
+    operator fun unaryPlus() = parsed
+    operator fun unaryMinus() = BooleanToken((!parsed).toString(), !parsed)
+
 }
 
 class IdentifierToken(raw: String, private val parsed: String, private val isStringify: Boolean = false) :
