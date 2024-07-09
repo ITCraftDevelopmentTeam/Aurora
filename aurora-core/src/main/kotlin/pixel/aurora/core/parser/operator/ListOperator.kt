@@ -1,6 +1,10 @@
 package pixel.aurora.core.parser.operator
 
-import pixel.aurora.core.parser.*
+import pixel.aurora.core.parser.Parser
+import pixel.aurora.core.parser.buffer
+import pixel.aurora.core.parser.include
+import pixel.aurora.core.parser.rule
+import pixel.aurora.core.tokenizer.expectPunctuation
 
 class ListOperator<T : Any>(
     val element: Parser<T>,
@@ -10,11 +14,11 @@ class ListOperator<T : Any>(
     val allowSeparatorEnd: Boolean = false
 ) : Parser<List<T>>() {
 
-    fun part() = parser {
+    fun part() = rule {
         if (separator != null) {
             for (character in separator) buffer.get().expectPunctuation(character)
         }
-        return@parser include(element)
+        return@rule include(element)
     }
 
     override fun parse(): List<T> {
@@ -33,7 +37,7 @@ class ListOperator<T : Any>(
         }
         if (allowSeparatorEnd && separator != null) {
             include(
-                parser {
+                rule {
                     for (character in separator) buffer.get().expectPunctuation(character)
                 }.optional()
             )
@@ -44,4 +48,20 @@ class ListOperator<T : Any>(
         return arguments
     }
 
+}
+
+
+fun <T : Any> Parser<T>.list(
+    prefix: String? = "(",
+    suffix: String? = ")",
+    separator: String? = ",",
+    allowSeparatorEnd: Boolean = false
+) = ListOperator(this, prefix, suffix, separator, allowSeparatorEnd)
+
+fun <T : Any, R : Any> Parser<out Iterable<T>>.mapEach(block: (T) -> R) = rule {
+    include(this@mapEach).map(block)
+}
+
+fun <T : Any, R : Any> Parser<out Iterable<T>>.mapEachIndexed(block: (index: Int, T) -> R) = rule {
+    include(this@mapEachIndexed).mapIndexed(block)
 }

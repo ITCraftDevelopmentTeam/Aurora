@@ -45,7 +45,8 @@ class BooleanToken(raw: String, private val parsed: Boolean = raw == "true") : U
 
 }
 
-class IdentifierToken(raw: String, private val parsed: String, private val isStringify: Boolean = false) : UnknownToken(raw) {
+class IdentifierToken(raw: String, private val parsed: String, private val isStringify: Boolean = false) :
+    UnknownToken(raw) {
 
     fun getName() = parsed
     fun isStringify() = isStringify

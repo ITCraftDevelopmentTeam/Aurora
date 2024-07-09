@@ -7,9 +7,17 @@ import pixel.aurora.core.parser.BaseParseException
 import java.net.URI
 import java.nio.CharBuffer
 
-class DefaultTokenizer(private val buffer: CharBuffer, private val uri: URI = Aurora.BLANK_URI, var punctuations: String = DEFAULT_PUNCTUATIONS) : Tokenizer {
+class DefaultTokenizer(
+    private val buffer: CharBuffer,
+    private val uri: URI = Aurora.BLANK_URI,
+    var punctuations: String = DEFAULT_PUNCTUATIONS
+) : Tokenizer {
 
-    constructor(content: CharSequence, uri: URI = Aurora.BLANK_URI, punctuations: String = DEFAULT_PUNCTUATIONS) : this(CharBuffer.wrap(content), uri, punctuations)
+    constructor(content: CharSequence, uri: URI = Aurora.BLANK_URI, punctuations: String = DEFAULT_PUNCTUATIONS) : this(
+        CharBuffer.wrap(content),
+        uri,
+        punctuations
+    )
 
     companion object {
 
@@ -188,7 +196,8 @@ class DefaultTokenizer(private val buffer: CharBuffer, private val uri: URI = Au
                     break
                 }
             }
-        } catch (_: Throwable) { }
+        } catch (_: Throwable) {
+        }
         return when (identifier) {
             "null" -> NullToken()
             "true", "false" -> BooleanToken(identifier)
