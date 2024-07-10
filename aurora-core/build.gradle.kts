@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+    api("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
 }
 
 dependencies {
