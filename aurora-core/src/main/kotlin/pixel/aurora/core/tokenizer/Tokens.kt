@@ -5,7 +5,6 @@ import pixel.aurora.core.parser.buffer
 import pixel.aurora.core.parser.include
 import pixel.aurora.core.parser.operator.optional
 import pixel.aurora.core.parser.rule
-import pixel.aurora.core.parser.util.RawIdentifierParser
 
 context(Parser<*>)
 inline fun <reified T> Token.expect() = this.also {
@@ -31,7 +30,10 @@ context(Parser<*>)
 fun numeric() = buffer.get().expect<NumericToken>()
 
 context(Parser<*>)
-fun identifier(name: String? = null) = include(RawIdentifierParser(name))
+fun identifier(name: String? = null) = buffer.get().expect<IdentifierToken>().let {
+    if (name != null) it.expect(name)
+    else it
+}
 
 context(Parser<*>)
 fun punctuation(punctuations: String) = punctuations.map { buffer.get().expectPunctuation(it) }
