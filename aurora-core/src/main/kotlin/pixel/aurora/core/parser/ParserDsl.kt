@@ -28,7 +28,7 @@ fun <R : Any> Parser<*>.includeWithState(parser: Parser<R>): Pair<Parser.State, 
     return resultState to result
 }
 
-fun <T : Any> rule(name: String? = null, block: Parser<T>.() -> T) = ParserSequence(name, block)
+fun <T : Any> rule(name: String? = null, block: ParserSequence<T>.() -> T) = ParserSequence(name, block)
 
 fun <T : Any, R : Any> Parser<T>.map(block: (T) -> R) = rule {
     block(include(this@map))

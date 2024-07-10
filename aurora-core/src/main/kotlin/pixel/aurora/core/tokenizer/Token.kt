@@ -22,6 +22,8 @@ class StringToken(raw: String, private val parsed: String) : UnknownToken(raw) {
     fun getString() = parsed
     override fun toString() = "${super.toString()}{ $parsed }"
 
+    operator fun unaryPlus() = parsed
+
 }
 
 class NumericToken(raw: String, private val parsed: BigDecimal) : UnknownToken(raw) {
@@ -29,15 +31,29 @@ class NumericToken(raw: String, private val parsed: BigDecimal) : UnknownToken(r
     fun getNumber() = parsed
     override fun toString() = "${super.toString()}{ $parsed }"
 
+    operator fun unaryPlus() = parsed
+
 }
 
 class PunctuationToken(private val raw: Char) : UnknownToken(raw.toString()) {
 
     fun getPunctuation() = raw
 
+    operator fun unaryPlus() = raw
+
 }
 
-class NullToken : UnknownToken("null")
+class WhitespaceToken(raw: String) : UnknownToken(raw) {
+
+    operator fun unaryPlus() = getRaw()
+
+}
+
+class NullToken : UnknownToken("null") {
+
+    operator fun unaryPlus() = null
+
+}
 
 class BooleanToken(raw: String, private val parsed: Boolean = raw == "true") : UnknownToken(raw) {
 
@@ -54,5 +70,7 @@ class IdentifierToken(raw: String, private val parsed: String, private val isStr
 
     fun getName() = parsed
     fun isStringify() = isStringify
+
+    operator fun unaryPlus() = parsed
 
 }

@@ -10,7 +10,10 @@ class ChoiceOperator<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
         for (choice in choices) {
             val result = includeWithState(choice.optional())
             if (result.second.isSuccess) return result.second.getOrNull() ?: throw makeError("Invalid syntax")
-            else if (result.first.isMarked) exception = result.second.exceptionOrNull()!!
+            else if (result.first.isMarked) {
+                exception = result.second.exceptionOrNull()!!
+                break
+            }
         }
         throw makeError("Invalid syntax", cause = exception)
     }

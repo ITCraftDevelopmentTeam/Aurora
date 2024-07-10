@@ -3,6 +3,8 @@ package pixel.aurora.core.tokenizer
 import pixel.aurora.core.parser.Parser
 import pixel.aurora.core.parser.buffer
 import pixel.aurora.core.parser.include
+import pixel.aurora.core.parser.operator.optional
+import pixel.aurora.core.parser.rule
 import pixel.aurora.core.parser.util.RawIdentifierParser
 
 context(Parser<*>)
@@ -36,3 +38,13 @@ fun punctuation(punctuations: String) = punctuations.map { buffer.get().expectPu
 
 context(Parser<*>)
 fun boolean() = buffer.get().expect<BooleanToken>()
+
+context(Parser<*>)
+fun whitespace(optional: Boolean = true) = include(
+    rule {
+        buffer.get().expect<WhitespaceToken>()
+    }.optional()
+).getOrNull().let {
+    if (!optional) it!!
+    else it
+}

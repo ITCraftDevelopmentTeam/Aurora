@@ -1,10 +1,10 @@
 package pixel.aurora.core.parser.operator
 
 import pixel.aurora.core.parser.Parser
-import pixel.aurora.core.parser.buffer
 import pixel.aurora.core.parser.include
 import pixel.aurora.core.parser.rule
-import pixel.aurora.core.tokenizer.expectPunctuation
+import pixel.aurora.core.tokenizer.punctuation
+import pixel.aurora.core.tokenizer.whitespace
 
 class ListOperator<T : Any>(
     val element: Parser<T>,
@@ -14,36 +14,38 @@ class ListOperator<T : Any>(
     val allowSeparatorEnd: Boolean = false
 ) : Parser<List<T>>() {
 
-    fun part() = rule {
-        if (separator != null) {
-            for (character in separator) buffer.get().expectPunctuation(character)
-        }
+    val part = rule {
+        whitespace()
+        if (separator != null) punctuation(separator)
+        whitespace()
         return@rule include(element)
     }
 
     override fun parse(): List<T> {
-        if (prefix != null) {
-            for (character in prefix) buffer.get().expectPunctuation(character)
-        }
+        if (prefix != null) punctuation(prefix)
         val arguments = mutableListOf<T>()
+        whitespace()
         val first = include(element.optional()).getOrNull()
+        whitespace()
         if (first != null) {
             arguments += first
             while (true) {
-                val result = include(part().optional()).getOrNull()
+                whitespace()
+                val result = include(part.optional()).getOrNull()
+                whitespace()
                 if (result == null) break
                 else arguments += result
             }
         }
         if (allowSeparatorEnd && separator != null) {
+            whitespace()
             include(
-                rule {
-                    for (character in separator) buffer.get().expectPunctuation(character)
-                }.optional()
+                rule { punctuation(separator) }.optional()
             )
+            whitespace()
         }
         if (suffix != null) {
-            for (character in suffix) buffer.get().expectPunctuation(character)
+            punctuation(suffix)
         }
         return arguments
     }

@@ -41,10 +41,17 @@ class DefaultTokenizer(
     }
 
     override fun tokenize(): Sequence<Token> = sequence {
+        var whitespace = ""
         while (true) {
             if (buffer.isEmpty()) break
             val character = buffer.get()
-            if (character.isWhitespace() || character in "\n\r") continue
+            if (character.isWhitespace() || character in "\n\r") {
+                whitespace += character
+                continue
+            } else {
+                whitespace = ""
+                yield(WhitespaceToken(whitespace))
+            }
             buffer.position(buffer.position() - 1)
             if (character == '/' && buffer.get(buffer.position() + 1) == '*') {
                 lexBlockComment()

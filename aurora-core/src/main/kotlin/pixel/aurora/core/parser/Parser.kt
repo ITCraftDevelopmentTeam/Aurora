@@ -3,6 +3,7 @@ package pixel.aurora.core.parser
 import pixel.aurora.core.tokenizer.TokenBuffer
 import java.net.URI
 
+
 abstract class Parser<T : Any>(name: String? = null) {
 
     private val name: String = name ?: this::class.java.simpleName
@@ -36,8 +37,10 @@ abstract class Parser<T : Any>(name: String? = null) {
 }
 
 
-class ParserSequence<T : Any>(name: String? = null, private val block: Parser<T>.() -> T) : Parser<T>(name) {
+class ParserSequence<T : Any>(name: String? = null, private val block: ParserSequence<T>.() -> T) : Parser<T>(name) {
 
     override fun parse(): T = block()
+
+    operator fun <R : Any> Parser<R>.unaryPlus() = this@ParserSequence.include(this@unaryPlus)
 
 }
