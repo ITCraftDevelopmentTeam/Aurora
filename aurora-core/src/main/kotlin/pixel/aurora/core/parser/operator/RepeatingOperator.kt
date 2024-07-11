@@ -1,10 +1,10 @@
 package pixel.aurora.core.parser.operator
 
-import pixel.aurora.core.parser.Parser
+import pixel.aurora.core.parser.AbstractParser
 import pixel.aurora.core.parser.include
 
-class RepeatingOperator<T : Any>(val element: Parser<T>, val min: Int = 0, val max: Int = Int.MAX_VALUE) :
-    Parser<List<T>>() {
+class RepeatingOperator<T : Any>(val element: AbstractParser<T>, val min: Int = 0, val max: Int = Int.MAX_VALUE) :
+    AbstractParser<List<T>>() {
 
     override fun parse(): List<T> {
         val list = mutableListOf<T>()
@@ -21,4 +21,4 @@ class RepeatingOperator<T : Any>(val element: Parser<T>, val min: Int = 0, val m
 
 }
 
-fun <T : Any> Parser<T>.repeat(min: Int = 0, max: Int = Int.MAX_VALUE) = RepeatingOperator(this, min, max)
+fun <T : Any> AbstractParser<T>.repeat(min: Int = 0, max: Int = Int.MAX_VALUE) = RepeatingOperator(this, min, max)

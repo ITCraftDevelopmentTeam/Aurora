@@ -1,9 +1,9 @@
 package pixel.aurora.core.parser.operator
 
-import pixel.aurora.core.parser.Parser
+import pixel.aurora.core.parser.AbstractParser
 import pixel.aurora.core.parser.includeWithState
 
-class ChoiceOperator<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
+class ChoiceOperator<T : Any>(vararg val choices: AbstractParser<out T>) : AbstractParser<T>() {
 
     override fun parse(): T {
         var exception: Throwable? = null
@@ -20,16 +20,16 @@ class ChoiceOperator<T : Any>(vararg val choices: Parser<out T>) : Parser<T>() {
 
 }
 
-fun <T : Any> choose(vararg choices: Parser<out T>) = ChoiceOperator(*choices)
+fun <T : Any> choose(vararg choices: AbstractParser<out T>) = ChoiceOperator(*choices)
 
 @Suppress("UNCHECKED_CAST")
-infix fun <T : Any> Parser<out T>.or(other: Parser<out T>): ChoiceOperator<T> {
+infix fun <T : Any> AbstractParser<out T>.or(other: AbstractParser<out T>): ChoiceOperator<T> {
     return if (this is ChoiceOperator<*>) choose(*this.choices, other) as ChoiceOperator<T>
     else if (other is ChoiceOperator<*>) choose(this, *other.choices) as ChoiceOperator<T>
     else choose(this, other)
 }
 
-infix fun <T : Any> ChoiceOperator<T>.not(filter: (Parser<out T>) -> Boolean) =
+infix fun <T : Any> ChoiceOperator<T>.not(filter: (AbstractParser<out T>) -> Boolean) =
     ChoiceOperator(*this.choices.filter(filter).toTypedArray())
 
 inline fun <reified T : Any> ChoiceOperator<T>.not() = not {

@@ -22,8 +22,8 @@ class TokenizerException(
 class ParserException(
     private val inputMessage: String?,
     val buffer: TokenBuffer,
-    val parser: Parser<*>,
-    val state: Parser.State,
+    val parser: AbstractParser<*>,
+    val state: AbstractParser.State,
     private val inputCause: Throwable? = null
 ) :
     BaseParseException(inputMessage, state.uri, cause = inputCause) {

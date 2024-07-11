@@ -1,11 +1,11 @@
 package pixel.aurora.core.parser.operator
 
-import pixel.aurora.core.parser.Parser
+import pixel.aurora.core.parser.AbstractParser
 import pixel.aurora.core.parser.buffer
 import pixel.aurora.core.parser.include
 import pixel.aurora.core.parser.rule
 
-class OptionalOperator<T : Any>(val parser: Parser<T>, val rollback: Boolean = true) : Parser<Result<T>>() {
+class OptionalOperator<T : Any>(val parser: AbstractParser<T>, val rollback: Boolean = true) : AbstractParser<Result<T>>() {
 
     override fun parse(): Result<T> {
         val position = buffer.position()
@@ -22,13 +22,13 @@ class OptionalOperator<T : Any>(val parser: Parser<T>, val rollback: Boolean = t
 
 }
 
-fun <R : Any> Parser<R>.optional(rollback: Boolean = true) = OptionalOperator(this, rollback)
+fun <R : Any> AbstractParser<R>.optional(rollback: Boolean = true) = OptionalOperator(this, rollback)
 
-fun <T : Any> Parser<Result<T>>.orElse(block: (Throwable) -> T) = rule {
+fun <T : Any> AbstractParser<Result<T>>.orElse(block: (Throwable) -> T) = rule {
     include(this@orElse).getOrElse(block)
 }
 
-fun <T : Any> Parser<Result<T>>.orElse(parser: Parser<T>) = rule {
+fun <T : Any> AbstractParser<Result<T>>.orElse(parser: AbstractParser<T>) = rule {
     include(this@orElse).getOrElse {
         include(parser)
     }
